@@ -1,0 +1,17 @@
+if(a!=b){
+	return neq;
+}
+
+else if (a <= b){
+	return leq;
+}
+
+else if (a >= b){
+	return geq;
+}
+
+else if (a == b){
+	return comp;
+}
+
+
