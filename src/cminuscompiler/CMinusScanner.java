@@ -157,7 +157,7 @@ public class CMinusScanner implements Scanner {
                                 currentToken = new Token(Token.TokenType.CLOSECURLY_TOKEN);
                                 break;
                             default:
-                                throw new IOException("Error Scanning File"); 
+                                throw new IOException("Unknown Token"); 
                         }
                     }
                     break;
