@@ -27,7 +27,8 @@ public class CMinusScanner implements Scanner {
         FSLASH,
         LESSTHAN,
         GREATERTHAN,
-        EQUALS
+        EQUALS,
+        NOTEQUALS
     }
     private stateType state;
     
@@ -74,7 +75,7 @@ public class CMinusScanner implements Scanner {
         boolean save;
         boolean readNext = true;
         List<String> tokenData;
-        Token currentToken;
+        Token currentToken = null;
         state = stateType.START;
         
         char c = ' ';
@@ -114,6 +115,9 @@ public class CMinusScanner implements Scanner {
                     }
                     else if (c == '=') {
                         state = stateType.EQUALS;
+                    }
+                    else if (c == '!'){
+                        state = stateType.NOTEQUALS;
                     }
                     else {
                         state = stateType.DONE;
@@ -157,24 +161,36 @@ public class CMinusScanner implements Scanner {
                     }
                     readNext = true;
                     break;
+                    
+                case NOTEQUALS:
+                    if(c == '='){
+                        currentToken = new Token (Token.TokenType.NOTEQ_TOKEN);
+                        state = stateType.DONE;
+                    } else {
+                        throw new IOException("Illegal token");
+                    }
                 case FSLASH:
                     if (c == '*') {
                         currentToken = new Token (Token.TokenType.OPENCOMMENT_TOKEN);
                         readNext = true;
+                        state = stateType.INCOMMENT;
                     }
                     else {
                         currentToken = new Token ( Token.TokenType.DIV_TOKEN);
                         readNext = false;
+                        state = stateType.DONE;
                     }
                     break;
                 case GREATERTHAN:
                     if (c == '=') {
                         currentToken = new Token (Token.TokenType.GTEQ_TOKEN);                        
                         readNext = true;
+                        state = stateType.DONE;
                     }
                     else {
                         currentToken = new Token (Token.TokenType.GT_TOKEN); 
                         readNext = false;
+                        state = stateType.DONE;
                     }
                     
                     break;
@@ -182,20 +198,24 @@ public class CMinusScanner implements Scanner {
                     if (c == '=') {
                         currentToken = new Token (Token.TokenType.LTEQ_TOKEN);
                         readNext = true;
+                        state = stateType.DONE;
                     }
                     else {
                         currentToken = new Token (Token.TokenType.LT_TOKEN);
                         readNext = false;
+                        state = stateType.DONE;
                     }
                     break;
                   case EQUALS:
                       if (c == '=') {
                           currentToken = new Token (Token.TokenType.EQ_TOKEN);
                           readNext = true;
+                          state = stateType.DONE;
                       }
                       else {
                           currentToken = new Token (Token.TokenType.ASSIGN_TOKEN);
                           readNext = false;
+                          state = stateType.DONE;
                       }
                     break;
                   case INNUM:
@@ -230,12 +250,11 @@ public class CMinusScanner implements Scanner {
                       break;
                   default:
                       state = stateType.DONE;                      
-                      throw new IOException("You shouldn't have reached this state.");
-                      break;                      
+                      throw new IOException("You shouldn't have reached this state.");                      
             }     
         }
         
-        return null;
+        return currentToken;
     }
 
     
