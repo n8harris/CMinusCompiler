@@ -214,6 +214,18 @@ public class CMinusScanner implements Scanner {
                           currentToken = new Token (Token.TokenType.ID_TOKEN);
                       }
                     break;
+                  case INCOMMENT:
+                      if (c == '*') {
+                          r = inFile.read();
+                          c = (char) r;
+                          if (c == '/') {
+                              currentToken = new Token (Token.TokenType.CLOSECOMMENT_TOKEN);
+                              state = stateType.DONE;
+                          }
+                          else {
+                              state = stateType.INCOMMENT;
+                          }
+                      }
                   case DONE:
                       break;
                   default:
