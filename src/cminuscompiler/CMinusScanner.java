@@ -96,28 +96,34 @@ public class CMinusScanner implements Scanner {
                 case START:
                     if (isDigit(c)) {
                         state = stateType.INNUM;
+                        inFile.mark(2);
                     }
                     else if (isLetter(c)) {
                         state = stateType.INID;
+                        inFile.mark(2);
                     }
                     else if ((c == ' ') || (c == '\t') || (c == '\n')) {
                         save = false;
                     }
                     else if (c == '/') {
                         save = false;
-                        state = stateType.FSLASH;
+                        inFile.mark(2);
                     }
                     else if (c == '>') {
                         state = stateType.GREATERTHAN;
+                        inFile.mark(2);
                     }
                     else if (c == '<') {
                         state = stateType.LESSTHAN;
+                        inFile.mark(2);
                     }
                     else if (c == '=') {
                         state = stateType.EQUALS;
+                        inFile.mark(2);
                     }
                     else if (c == '!'){
                         state = stateType.NOTEQUALS;
+                        inFile.mark(2);
                     }
                     else {
                         state = stateType.DONE;
@@ -177,7 +183,7 @@ public class CMinusScanner implements Scanner {
                     }
                     else {
                         currentToken = new Token ( Token.TokenType.DIV_TOKEN);
-                        readNext = false;
+                        inFile.reset();
                         state = stateType.DONE;
                     }
                     break;
@@ -189,7 +195,7 @@ public class CMinusScanner implements Scanner {
                     }
                     else {
                         currentToken = new Token (Token.TokenType.GT_TOKEN); 
-                        readNext = false;
+                        inFile.reset();
                         state = stateType.DONE;
                     }
                     
@@ -202,7 +208,7 @@ public class CMinusScanner implements Scanner {
                     }
                     else {
                         currentToken = new Token (Token.TokenType.LT_TOKEN);
-                        readNext = false;
+                        inFile.reset();
                         state = stateType.DONE;
                     }
                     break;
@@ -214,14 +220,14 @@ public class CMinusScanner implements Scanner {
                       }
                       else {
                           currentToken = new Token (Token.TokenType.ASSIGN_TOKEN);
-                          readNext = false;
+                          inFile.reset();
                           state = stateType.DONE;
                       }
                     break;
                   case INNUM:
                       if (!isDigit(c)) {
                           save = false;
-                          readNext = false;
+                          inFile.reset();
                           state = stateType.DONE;
                           currentToken = new Token (Token.TokenType.NUM_TOKEN);
                       }
@@ -229,7 +235,7 @@ public class CMinusScanner implements Scanner {
                   case INID:
                       if (!isAlphabetic(c)) {
                           save = false;
-                          readNext = false;
+                          inFile.reset();
                           state = stateType.DONE;
                           currentToken = new Token (Token.TokenType.ID_TOKEN);
                       }
