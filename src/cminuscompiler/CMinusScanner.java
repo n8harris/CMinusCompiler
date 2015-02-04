@@ -143,12 +143,25 @@ public class CMinusScanner implements Scanner {
                                 break;
                             default:
                                 throw new IOException("Error Scanning File");
-                                
-                            //More stuff goes here
+                            
                         }
                     }
-                    
+                    readNext = true;
                     break;
+                case FSLASH: {
+                    if (c == '*') {
+                        currentToken = new Token (Token.TokenType.OPENCOMMENT_TOKEN);
+                        readNext = true;
+                    }
+                    else {
+                        currentToken = new Token ( Token.TokenType.DIV_TOKEN);
+                        readNext = false;
+                    }
+                    break;
+                }
+                case GREATERTHAN: {
+                    if (c ==)
+                }
             }
             
             
