@@ -1,6 +1,5 @@
 package cminuscompiler;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,11 +12,12 @@ import static java.lang.Character.isLetter;
 
 /**
  *
- * @author Nate H
+ * @author Nate H, Jake P
  */
 public class CMinusScanner implements Scanner {
-    private PushbackReader inFile;
+    private PushbackReader inFile; //PushbackReader so that we can unread chars
     private Token nextToken;
+    //enum for referencing specific states
     public enum stateType {
         START,
         INCOMMENT,
@@ -30,27 +30,32 @@ public class CMinusScanner implements Scanner {
         EQUALS,
         NOTEQUALS
     }
+    //Our state variable which will change throughout execution
     private stateType state;
     
     public CMinusScanner (PushbackReader file) throws IOException {
         inFile = file;
-        nextToken = scanToken();
+        nextToken = scanToken(); //Instantiate a CMinusScanner with the first token in the file
     }
     
     public static void main(String[] args) throws FileNotFoundException, IOException {
+        //First command line argument is input, second is output
         PushbackReader reader = new PushbackReader(new FileReader(args[0]));
         BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
         CMinusScanner scanner = new CMinusScanner(reader);
         
+        //Check to make sure we are not at the end of the file
         while(scanner.viewNextToken().getType() != Token.TokenType.EOF_TOKEN){
+            //Get the next token and check the type
             Token currentToken = scanner.getNextToken();
             Token.TokenType type = currentToken.getType();
-            
+            //If token is identifier or num, print out the value too
             if(type == Token.TokenType.ID_TOKEN || type == Token.TokenType.NUM_TOKEN){
                 String data = currentToken.getData().toString();
                 writer.write(type + ": " + data);
                 writer.newLine();
             } else {
+                //Don't print out the comment tokens
                 if(type != Token.TokenType.OPENCOMMENT_TOKEN && type != Token.TokenType.CLOSECOMMENT_TOKEN){
                     writer.write(type.toString());
                     writer.newLine();
@@ -77,25 +82,27 @@ public class CMinusScanner implements Scanner {
     }
     
     public Token scanToken() throws IOException {
-        boolean save;
         String tokenData = "";
         Token currentToken = null;
-        state = stateType.START;
+        state = stateType.START; //State begins in start state
         
         char c = ' ';
         int r = -1;
         
+        //Loop for grabbing a token. When a token is found, state will be set to DONE
         while(state != stateType.DONE) {
-            r = inFile.read();
+            r = inFile.read(); //Read next char in file
+            //If we have not gotten to end of file (EOF returns -1)
             if(r == -1){
                 currentToken = new Token(Token.TokenType.EOF_TOKEN);
                 return currentToken;
             }
-            c = (char) r;
-            save = true;
+            c = (char) r; //Explicitly cast what read() returns to a char
             
             switch(state) {
                 case START:
+                    //Check for possible kinds of tokens
+                    //If character does not associate with valid token, throw exception
                     if (isDigit(c)) {
                         state = stateType.INNUM;
                     }
@@ -121,6 +128,7 @@ public class CMinusScanner implements Scanner {
                         continue;
                     }
                     else {
+                        //One character tokens
                         state = stateType.DONE;
                         switch (c) {
                             case '+':
@@ -167,9 +175,11 @@ public class CMinusScanner implements Scanner {
                         currentToken = new Token (Token.TokenType.NOTEQ_TOKEN);
                         state = stateType.DONE;
                     } else {
-                        throw new IOException("Illegal token");
+                        //Invalid token if next char is anything but "="
+                        throw new IOException("Illegal token: !" + c);
                     }
                 case FSLASH:
+                    //State which could be either start of comment or divide
                     if (c == '*') {
                         currentToken = new Token ( Token.TokenType.OPENCOMMENT_TOKEN);
                         state = stateType.INCOMMENT;
@@ -181,6 +191,7 @@ public class CMinusScanner implements Scanner {
                     }
                     break;
                 case GREATERTHAN:
+                    //State which could be greater than or greater than or equal to
                     if (c == '=') {
                         currentToken = new Token (Token.TokenType.GTEQ_TOKEN);                        
                         state = stateType.DONE;
@@ -193,6 +204,7 @@ public class CMinusScanner implements Scanner {
                     
                     break;
                   case LESSTHAN:
+                    //State which could be either less than or less than or equal to
                     if (c == '=') {
                         currentToken = new Token (Token.TokenType.LTEQ_TOKEN);
                         state = stateType.DONE;
@@ -204,6 +216,7 @@ public class CMinusScanner implements Scanner {
                     }
                     break;
                   case EQUALS:
+                      //State which could be assign or compare
                       if (c == '=') {
                           currentToken = new Token (Token.TokenType.EQ_TOKEN);
                           state = stateType.DONE;
@@ -215,22 +228,23 @@ public class CMinusScanner implements Scanner {
                       }
                     break;
                   case INNUM:
+                      //Stay in this case till a non-num is found
                       if (!isDigit(c)) {
-                          save = true;
                           inFile.unread(c);
                           state = stateType.DONE;
                           currentToken = new Token (Token.TokenType.NUM_TOKEN, tokenData);
                       }
                     break;
                   case INID:
+                      //Stay in this case till a non-letter is found
                       if (!isAlphabetic(c)) {
-                          save = true;
                           inFile.unread(c);
                           state = stateType.DONE;
                           currentToken = new Token (Token.TokenType.ID_TOKEN, tokenData);
                       }
                     break;
                   case INCOMMENT:
+                      //Stay in this state till we get the closing comment token
                       if (c == '*') {
                           r = inFile.read();
                           c = (char) r;
@@ -250,11 +264,14 @@ public class CMinusScanner implements Scanner {
             }
             
             if(state != stateType.DONE){
+                //Save data to tokenData (will always be saved, but will only
+                //be saved for ID and NUM)
                 if(c != ' ' && c != '\t' && c != '\n'){
                     tokenData += String.valueOf(c);
                 }
             }
             if(state == stateType.DONE){
+                //If token is identifier, lookup the token and compare with keywords
                 if(currentToken.getType() == Token.TokenType.ID_TOKEN){
                     currentToken = lookupKeyword(tokenData, currentToken);
                 }
@@ -267,6 +284,8 @@ public class CMinusScanner implements Scanner {
     }
     
     public static Token lookupKeyword(String data, Token currentToken){
+        //If token matches predefined keyword, return a keyword 
+        //Otherwise, just return an identifier token
         Token newToken;
         switch(data){
             case "if":
