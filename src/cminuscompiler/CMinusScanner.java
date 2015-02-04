@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
 import java.util.List;
@@ -196,15 +197,30 @@ public class CMinusScanner implements Scanner {
                           currentToken = new Token (Token.TokenType.ASSIGN_TOKEN);
                           readNext = false;
                       }
-                      break;
+                    break;
                   case INNUM:
                       if (!isDigit(c)) {
-                          
+                          save = false;
+                          readNext = false;
+                          state = stateType.DONE;
+                          currentToken = new Token (Token.TokenType.NUM_TOKEN);
                       }
-                      
-            }
-            
-            
+                    break;
+                  case INID:
+                      if (!isAlphabetic(c)) {
+                          save = false;
+                          readNext = false;
+                          state = stateType.DONE;
+                          currentToken = new Token (Token.TokenType.ID_TOKEN);
+                      }
+                    break;
+                  case DONE:
+                      break;
+                  default:
+                      state = stateType.DONE;                      
+                      throw new IOException("You shouldn't have reached this state.");
+                      break;                      
+            }     
         }
         
         return null;
