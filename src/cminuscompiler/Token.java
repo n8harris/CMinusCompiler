@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package cminuscompiler;
 
 /**
@@ -41,7 +38,6 @@ public class Token {
         ID_TOKEN,
         NUM_TOKEN,
         EOF_TOKEN
-        // rest of tokens ....
     }
 
 
@@ -68,6 +64,5 @@ public class Token {
         tokenType = e;
     }
 
-    // some access methods
 }
 
