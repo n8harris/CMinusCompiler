@@ -105,6 +105,12 @@ public class CMinusScanner implements Scanner {
                         save = false;
                         state = stateType.FSLASH;
                     }
+                    else if (c == '>') {
+                        state = stateType.GREATERTHAN;
+                    }
+                    else if (c == '<') {
+                        state = stateType.LESSTHAN;
+                    }
                     else {
                         state = stateType.DONE;
                         switch (c) {
@@ -142,13 +148,12 @@ public class CMinusScanner implements Scanner {
                                 currentToken = new Token(Token.TokenType.CLOSECURLY_TOKEN);
                                 break;
                             default:
-                                throw new IOException("Error Scanning File");
-                            
+                                throw new IOException("Error Scanning File"); 
                         }
                     }
                     readNext = true;
                     break;
-                case FSLASH: {
+                case FSLASH:
                     if (c == '*') {
                         currentToken = new Token (Token.TokenType.OPENCOMMENT_TOKEN);
                         readNext = true;
@@ -158,10 +163,27 @@ public class CMinusScanner implements Scanner {
                         readNext = false;
                     }
                     break;
-                }
-                case GREATERTHAN: {
-                    if (c ==)
-                }
+                case GREATERTHAN:
+                    if (c == '=') {
+                        currentToken = new Token (Token.TokenType.GTEQ_TOKEN);                        
+                    }
+                    else {
+                        currentToken = new Token (Token.TokenType.GT_TOKEN); 
+                    }
+                    readNext = true;
+                    break;
+                  case LESSTHAN:
+                    if (c == '=') {
+                        currentToken = new Token (Token.TokenType.LTEQ_TOKEN);
+
+                    }
+                    else {
+                        currentToken = new Token (Token.TokenType.LT_TOKEN);
+
+                    }
+                    readNext = true;
+                    break;
+                      
             }
             
             
