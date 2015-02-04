@@ -111,6 +111,9 @@ public class CMinusScanner implements Scanner {
                     else if (c == '<') {
                         state = stateType.LESSTHAN;
                     }
+                    else if (c == '=') {
+                        state = stateType.EQUALS;
+                    }
                     else {
                         state = stateType.DONE;
                         switch (c) {
@@ -166,23 +169,38 @@ public class CMinusScanner implements Scanner {
                 case GREATERTHAN:
                     if (c == '=') {
                         currentToken = new Token (Token.TokenType.GTEQ_TOKEN);                        
+                        readNext = true;
                     }
                     else {
                         currentToken = new Token (Token.TokenType.GT_TOKEN); 
+                        readNext = false;
                     }
-                    readNext = true;
+                    
                     break;
                   case LESSTHAN:
                     if (c == '=') {
                         currentToken = new Token (Token.TokenType.LTEQ_TOKEN);
-
+                        readNext = true;
                     }
                     else {
                         currentToken = new Token (Token.TokenType.LT_TOKEN);
-
+                        readNext = false;
                     }
-                    readNext = true;
                     break;
+                  case EQUALS:
+                      if (c == '=') {
+                          currentToken = new Token (Token.TokenType.EQ_TOKEN);
+                          readNext = true;
+                      }
+                      else {
+                          currentToken = new Token (Token.TokenType.ASSIGN_TOKEN);
+                          readNext = false;
+                      }
+                      break;
+                  case INNUM:
+                      if (!isDigit(c)) {
+                          
+                      }
                       
             }
             
