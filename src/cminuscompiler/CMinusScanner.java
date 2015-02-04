@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import static java.lang.Character.isDigit;
+import static java.lang.Character.isLetter;
 
 /**
  *
@@ -55,12 +57,38 @@ public class CMinusScanner implements Scanner {
     }
     
     public Token scanToken() throws IOException {
+        Boolean save;
+        
         char c = ' ';
         int r = -1;
+        
         while(state != stateType.DONE) {
             r = inFile.read();
             c = (char) r;
+            save = true;
             
+            switch(state) {
+                case START:
+                    if (isDigit(c)) {
+                        state = stateType.INNUM;
+                    }
+                    else if (isLetter(c)) {
+                        state = stateType.INID;
+                    }
+                    else if ((c == ' ') || (c == '\t') || (c == '\n')) {
+                        save = false;
+                    }
+                    else if (c == '/') {
+                        save = false;
+                        state = stateType.INCOMMENT;
+                    }
+                    else {
+                        state = stateType.DONE;
+                        switch (c) {
+                            //More stuff goes here
+                        }
+                    }
+            }
             
             
         }
