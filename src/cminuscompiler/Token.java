@@ -58,11 +58,11 @@ public class Token {
     }
     
     public TokenType getType() {
-        return null;
+        return tokenType;
     }
 
     public void setType(TokenType e) {
-        
+        tokenType = e;
     }
 
     // some access methods
