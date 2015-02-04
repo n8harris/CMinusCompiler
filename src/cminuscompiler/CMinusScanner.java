@@ -27,6 +27,10 @@ public class CMinusScanner implements Scanner {
     public Token viewNextToken () {
         return nextToken;
     }
+    
+    public Token scanToken() {
+        
+    }
 
     
 }

@@ -56,6 +56,14 @@ public class Token {
         tokenType = type;
         tokenData = data;
     }
+    
+    public TokenType getType() {
+        return null;
+    }
+
+    public void setType(TokenType e) {
+        
+    }
 
     // some access methods
 }
