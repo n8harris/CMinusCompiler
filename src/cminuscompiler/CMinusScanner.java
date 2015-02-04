@@ -40,30 +40,38 @@ public class CMinusScanner implements Scanner {
     
     public static void main(String[] args) throws FileNotFoundException, IOException {
         //First command line argument is input, second is output
-        PushbackReader reader = new PushbackReader(new FileReader(args[0]));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
-        CMinusScanner scanner = new CMinusScanner(reader);
-        
-        //Check to make sure we are not at the end of the file
-        while(scanner.viewNextToken().getType() != Token.TokenType.EOF_TOKEN){
-            //Get the next token and check the type
-            Token currentToken = scanner.getNextToken();
-            Token.TokenType type = currentToken.getType();
-            //If token is identifier or num, print out the value too
-            if(type == Token.TokenType.ID_TOKEN || type == Token.TokenType.NUM_TOKEN){
-                String data = currentToken.getData().toString();
-                writer.write(type + ": " + data);
-                writer.newLine();
-            } else {
-                //Don't print out the comment tokens
-                if(type != Token.TokenType.OPENCOMMENT_TOKEN && type != Token.TokenType.CLOSECOMMENT_TOKEN){
-                    writer.write(type.toString());
+        try{
+            PushbackReader reader = new PushbackReader(new FileReader(args[0]));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
+            CMinusScanner scanner = new CMinusScanner(reader);
+            
+            //Check to make sure we are not at the end of the file
+            while(scanner.viewNextToken().getType() != Token.TokenType.EOF_TOKEN){
+                //Get the next token and check the type
+                Token currentToken = scanner.getNextToken();
+                Token.TokenType type = currentToken.getType();
+                //If token is identifier or num, print out the value too
+                if(type == Token.TokenType.ID_TOKEN || type == Token.TokenType.NUM_TOKEN){
+                    String data = currentToken.getData().toString();
+                    writer.write(type + ": " + data);
                     writer.newLine();
+                } else {
+                    //Don't print out the comment tokens
+                    if(type != Token.TokenType.OPENCOMMENT_TOKEN && type != Token.TokenType.CLOSECOMMENT_TOKEN){
+                        writer.write(type.toString());
+                        writer.newLine();
+                    }
                 }
             }
+        
+            writer.close();
+        }
+        catch(FileNotFoundException e){
+            System.out.println("Error: " + e.getMessage());
         }
         
-        writer.close();
+        
+        
     }
     
     public Token getNextToken () {
@@ -178,6 +186,7 @@ public class CMinusScanner implements Scanner {
                         //Invalid token if next char is anything but "="
                         throw new IOException("Illegal token: !" + c);
                     }
+                    break;
                 case FSLASH:
                     //State which could be either start of comment or divide
                     if (c == '*') {
