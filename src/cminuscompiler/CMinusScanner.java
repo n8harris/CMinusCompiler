@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
+import java.util.List;
 
 /**
  *
@@ -22,6 +23,10 @@ public class CMinusScanner implements Scanner {
         INNUM,
         INID,
         DONE,
+        FSLASH,
+        LESSTHAN,
+        GREATERTHAN,
+        EQUALS
     }
     private stateType state;
     
@@ -35,9 +40,17 @@ public class CMinusScanner implements Scanner {
         BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
         CMinusScanner scanner = new CMinusScanner(reader);
         
-        while(scanner.nextToken.getType() != Token.TokenType.EOF_TOKEN){
-            writer.write(scanner.getNextToken().toString());
-            writer.newLine();
+        while(scanner.viewNextToken().getType() != Token.TokenType.EOF_TOKEN){
+            Token currentToken = scanner.getNextToken();
+            Token.TokenType type = currentToken.getType();
+            String data = currentToken.getData().toString();
+            if(type == Token.TokenType.ID_TOKEN || type == Token.TokenType.NUM_TOKEN){
+                writer.write(type + ": " + data);
+                writer.newLine();
+            } else {
+                writer.write(type.toString());
+                writer.newLine();
+            }
         }
     }
     
@@ -57,13 +70,23 @@ public class CMinusScanner implements Scanner {
     }
     
     public Token scanToken() throws IOException {
-        Boolean save;
+        boolean save;
+        boolean readNext = true;
+        List<String> tokenData;
+        Token currentToken;
+        state = stateType.START;
         
         char c = ' ';
         int r = -1;
         
         while(state != stateType.DONE) {
-            r = inFile.read();
+            if(readNext){
+                r = inFile.read();
+                if(r == -1){
+                    currentToken = new Token(Token.TokenType.EOF_TOKEN);
+                    return currentToken;
+                }
+            }
             c = (char) r;
             save = true;
             
@@ -80,14 +103,52 @@ public class CMinusScanner implements Scanner {
                     }
                     else if (c == '/') {
                         save = false;
-                        state = stateType.INCOMMENT;
+                        state = stateType.FSLASH;
                     }
                     else {
                         state = stateType.DONE;
                         switch (c) {
+                            case '+':
+                                currentToken = new Token(Token.TokenType.PLUS_TOKEN);
+                                break;
+                            case '-':
+                                currentToken = new Token(Token.TokenType.MINUS_TOKEN);
+                                break;
+                            case '*':
+                                currentToken = new Token(Token.TokenType.MULT_TOKEN);
+                                break;
+                            case '(':
+                                currentToken = new Token(Token.TokenType.OPENPAREN_TOKEN);
+                                break;
+                            case ')':
+                                currentToken = new Token(Token.TokenType.CLOSEPAREN_TOKEN);
+                                break;
+                            case ';':
+                                currentToken = new Token(Token.TokenType.SEMICOLON_TOKEN);
+                                break;
+                            case ',':
+                                currentToken = new Token(Token.TokenType.COMMA_TOKEN);
+                                break;
+                            case '[':
+                                currentToken = new Token(Token.TokenType.OPENBRACKET_TOKEN);
+                                break;
+                            case ']':
+                                currentToken = new Token(Token.TokenType.CLOSEBRACKET_TOKEN);
+                                break;
+                            case '{':
+                                currentToken = new Token(Token.TokenType.OPENCURLY_TOKEN);
+                                break;
+                            case '}':
+                                currentToken = new Token(Token.TokenType.CLOSECURLY_TOKEN);
+                                break;
+                            default:
+                                throw new IOException("Error Scanning File");
+                                
                             //More stuff goes here
                         }
                     }
+                    
+                    break;
             }
             
             
