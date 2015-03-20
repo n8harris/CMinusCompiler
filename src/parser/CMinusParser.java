@@ -20,12 +20,9 @@ public class CMinusParser {
         scanner = scan;
     }
     
-    public Program startParse(){
-        //Check to make sure we are not at the end of the file
-            Program p = null;
-            p = parseProgram();
+    public Program startParse() throws Exception{
             
-            return p;
+            return parseProgram();
     }
     
     public void match(Token.TokenType t) throws Exception{
@@ -39,14 +36,12 @@ public class CMinusParser {
     public Program parseProgram() throws Exception{
         ArrayList<Declaration> declList = new ArrayList<>();
         while(scanner.viewNextToken().getType() == Token.TokenType.VOID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
-            Token.TokenType currentToken = scanner.viewNextToken().getType();
-            switch(currentToken){
-                case VOID_TOKEN: 
-                    match(Token.TokenType.VOID_TOKEN);
-                    
-                    break;
-            }
+            declList.add(parseDeclaration());
         }
+        
+        Program p = new Program(declList);
+        return p;
+        
     }
     
     
