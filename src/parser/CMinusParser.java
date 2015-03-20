@@ -44,5 +44,17 @@ public class CMinusParser {
         
     }
     
+    public Declaration parseDeclaration() throws Exception{
+        switch(scanner.viewNextToken().getType()) {
+            case VOID_TOKEN:
+                match(Token.TokenType.VOID_TOKEN);
+                parseIdentifier();
+                parseFunctionDeclaration();                
+                break;
+            case INT_TOKEN:
+                match(Token.TokenType.INT_TOKEN);
+                
+        }
+    }
     
 }
