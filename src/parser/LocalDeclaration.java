@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 import java.util.ArrayList;
 
@@ -10,12 +10,12 @@ import java.util.ArrayList;
  *
  * @author Nate H
  */
-public class ArgExpression {
+public class LocalDeclaration {
     
-    private ArrayList<Expression> expList;
+    private ArrayList<VarDeclaration> varList;
     
-    public ArgExpression(ArrayList<Expression> e){
-        expList = e;
+    public LocalDeclaration(ArrayList<VarDeclaration> v){
+        varList = v;
     }
     
 }

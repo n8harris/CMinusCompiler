@@ -2,19 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 /**
  *
  * @author Nate H
  */
-public class CMinusParser {
+public class ReturnStatement extends Statement {
     
-    private CMinusScanner scanner;
+    Expression expr;
     
-    public CMinusParser(CMinusScanner scan){
-        scanner = scan;
+    public ReturnStatement(Expression e){
+        expr = e;
     }
-    
     
 }

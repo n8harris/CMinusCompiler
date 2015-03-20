@@ -1,4 +1,4 @@
-package cminuscompiler;
+package scanner;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;

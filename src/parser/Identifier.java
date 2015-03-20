@@ -2,18 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 /**
  *
  * @author Nate H
  */
-public class ReturnStatement extends Statement {
+public class Identifier {
     
-    Expression expr;
+    private String id;
     
-    public ReturnStatement(Expression e){
-        expr = e;
+    public Identifier(String i){
+        id = i;
     }
     
 }

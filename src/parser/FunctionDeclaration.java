@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 import java.util.ArrayList;
 
@@ -14,9 +14,10 @@ public class FunctionDeclaration extends Declaration {
     
     private ArrayList<Parameter> params;
     private CompoundStatement cmpdStatement;
+    private Identifier id;
     
     public FunctionDeclaration(ArrayList<Parameter> p, CompoundStatement c, Identifier i){
-        super(i);
+        id = i;
         params = p;
         cmpdStatement = c;
     }

@@ -4,6 +4,8 @@
 
 package cminuscompiler;
 
+import scanner.Scanner;
+import scanner.Token;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

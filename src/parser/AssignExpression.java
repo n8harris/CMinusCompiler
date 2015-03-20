@@ -2,20 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 /**
  *
  * @author Nate H
  */
-public class CallExpression extends Expression {
+public class AssignExpression extends Expression {
     
     private Identifier id;
-    private ArgExpression arg;
+    private Expression expr;
     
-    public CallExpression(Identifier i, ArgExpression a){
+    public AssignExpression(Identifier i, Expression e){
         id = i;
-        arg = a;
+        expr = e;
     }
     
 }

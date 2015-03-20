@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 /**
  *
@@ -11,15 +11,16 @@ package cminuscompiler;
 public class VarDeclaration extends Declaration {
     
     Numeric num;
+    Identifier id;
     
     public VarDeclaration(Numeric n, Identifier i){
-        super(i);
+        id = i;
         num = n;
         
     }
     
     public VarDeclaration(Identifier i){
-        super(i);
+        id = i;
     }
     
 }

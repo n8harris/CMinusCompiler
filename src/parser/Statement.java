@@ -2,18 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cminuscompiler;
+package parser;
 
 /**
  *
  * @author Nate H
  */
-public class Identifier {
+public abstract class Statement {
     
-    private String id;
-    
-    public Identifier(String i){
-        id = i;
-    }
     
 }
