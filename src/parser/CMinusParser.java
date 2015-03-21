@@ -62,8 +62,12 @@ public class CMinusParser {
                 } else if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN){
                     FunctionDeclaration fDecl = parseFunctionDeclaration(t.getData().toString());
                     return fDecl;
+                } else {
+                    throw new Exception("Error");
                 }
-                break;
+                
+            default:
+                throw new Exception("Error");
                 
         }
     }
@@ -100,6 +104,22 @@ public class CMinusParser {
                     }
 
             
+        }
+    }
+    
+    public Identifier parseIdentifier() throws Exception{
+        if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN){
+            return new Identifier(scanner.getNextToken().getData().toString());
+        } else {
+            throw new Exception("Error");
+        }
+    }
+    
+    public Numeric parseNumeric() throws Exception{
+        if(scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+            return new Numeric((double)scanner.getNextToken().getData());
+        } else {
+            throw new Exception("Error");
         }
     }
     
