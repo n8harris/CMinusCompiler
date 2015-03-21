@@ -48,7 +48,7 @@ public class CMinusParser {
         switch(scanner.viewNextToken().getType()) {
             case VOID_TOKEN:
                 match(Token.TokenType.VOID_TOKEN);
-                Declaration funDecl = parseFunctionDeclaration();
+                Declaration funDecl = parseFunctionDeclaration(null);
                 return funDecl;
             case INT_TOKEN:
                 match(Token.TokenType.INT_TOKEN);
@@ -121,6 +121,22 @@ public class CMinusParser {
         } else {
             throw new Exception("Error");
         }
+    }
+    
+    public FunctionDeclaration parseFunctionDeclaration(String s) throws Exception {
+	if (s == null){
+            Identifier id = parseIdentifier();  
+        }
+        match(Token.TokenType.OPENPAREN_TOKEN);
+        ArrayList<Parameter> params;
+        params.push(parseParameter());
+        while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN) {
+            match(Token.TokenType.COMMA_TOKEN);
+            params.push(parseParameter());
+        }
+        match(Token.TokenType.CLOSEPAREN_TOKEN);
+        CompoundStatement compoundStmt = parseCompoundStatement();
+        return new FunctionDeclaration(params, compoundStmt, new Identifier(s));
     }
     
 }
