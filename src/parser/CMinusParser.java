@@ -205,7 +205,7 @@ public class CMinusParser {
         }
     }
     
-    public ExpressionStatement parseExpressionStatement(){
+    public ExpressionStatement parseExpressionStatement() throws Exception{
         ExpressionStatement exp = null;
         Token.TokenType currentToken = scanner.viewNextToken().getType();
         switch(currentToken){
@@ -220,5 +220,22 @@ public class CMinusParser {
         
     }
     
+   public Statement parseIfStatement() throws Exception{
+       match(Token.TokenType.IF_TOKEN);
+       match(Token.TokenType.OPENPAREN_TOKEN);
+       Expression ifExpr = parseExpression();
+       match(Token.TokenType.CLOSEPAREN_TOKEN);
+       Statement thenStmt = parseStatement();
+       Statement elseStmt = null;
+       
+       if(scanner.viewNextToken().getType().tokenType == Token.TokenType.ELSE_TOKEN) {
+           match(Token.TokenType.ELSE_TOKEN);
+           elseStmt = parseStatement();
+       }
+       
+       Statement returnStmt = new IfStatement(ifExpr, thenStmt, elseStmt);
+       return returnStmt;
+       
+   } 
     
 }
