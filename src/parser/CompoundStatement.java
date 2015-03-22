@@ -4,16 +4,18 @@
  */
 package parser;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Nate H
  */
 public class CompoundStatement extends Statement {
     
-    private LocalDeclaration localDecl;
-    private StatementList stmtList;
+    private ArrayList<VarDeclaration> localDecl;
+    private ArrayList<Statement> stmtList;
     
-    public CompoundStatement(LocalDeclaration l, StatementList s){
+    public CompoundStatement(ArrayList<VarDeclaration> l, ArrayList<Statement> s){
         super();
         localDecl = l;
         stmtList = s;

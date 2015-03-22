@@ -129,10 +129,10 @@ public class CMinusParser {
         }
         match(Token.TokenType.OPENPAREN_TOKEN);
         ArrayList<Parameter> params = new ArrayList<>();
-        params.push(parseParameter());
+        params.add(parseParameter());
         while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN) {
             match(Token.TokenType.COMMA_TOKEN);
-            params.push(parseParameter());
+            params.add(parseParameter());
         }
         match(Token.TokenType.CLOSEPAREN_TOKEN);
         CompoundStatement compoundStmt = parseCompoundStatement();
@@ -166,11 +166,28 @@ public class CMinusParser {
     
     public CompoundStatement parseCompoundStatement() throws Exception {
         match(Token.TokenType.OPENBRACKET_TOKEN);
-        LocalDeclaration localDecl = parseLocalDeclaration();
-        StatementList stmtList = parseStatementList();
+        ArrayList<VarDeclaration> localDecl = new ArrayList<>();
+        ArrayList<Statement> stmtList = new ArrayList<>();
+        while(scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
+            localDecl.add(parseVarDeclaration(null));
+        }
+        
+        while(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.OPENCURLY_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.IF_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.WHILE_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.RETURN_TOKEN ){
+            
+            stmtList.add(parseStatement());
+        }
         match(Token.TokenType.CLOSEBRACKET_TOKEN);
-        CompoundStatement compoundStmt = new CompoundStatement(localDecl, stmtList);
-        return compoundStmt;
+        return new CompoundStatement(localDecl, stmtList);;
     }
     
 }
