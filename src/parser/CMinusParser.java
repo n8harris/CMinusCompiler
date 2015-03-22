@@ -164,4 +164,13 @@ public class CMinusParser {
         }
     }
     
+    public CompoundStatement parseCompoundStatement() throws Exception {
+        match(Token.TokenType.OPENBRACKET_TOKEN);
+        LocalDeclaration localDecl = parseLocalDeclaration();
+        StatementList stmtList = parseStatementList();
+        match(Token.TokenType.CLOSEBRACKET_TOKEN);
+        CompoundStatement compoundStmt = new CompoundStatement(localDecl, stmtList);
+        return compoundStmt;
+    }
+    
 }
