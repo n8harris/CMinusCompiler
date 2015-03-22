@@ -147,10 +147,9 @@ public class CMinusParser {
                 Identifier id = parseIdentifier();
                 if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
                     match(Token.TokenType.OPENBRACKET_TOKEN);
-                    Numeric num = parseNumeric();
                     match(Token.TokenType.CLOSEBRACKET_TOKEN);
                     match(Token.TokenType.SEMICOLON_TOKEN);
-                    return new Parameter(id, num);
+                    return new Parameter(id);
                 } else if (scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
                     match(Token.TokenType.SEMICOLON_TOKEN);
                     return new Parameter(id);
