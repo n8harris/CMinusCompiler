@@ -187,4 +187,24 @@ public class CMinusParser {
         return new CompoundStatement(localDecl, stmtList);
     }
     
+    public Statement parseStatement(){
+        Token.TokenType currentToken = scanner.viewNextToken().getType();
+        switch(currentToken){
+            case OPENPAREN_TOKEN: case NUM_TOKEN: case ID_TOKEN: case SEMICOLON_TOKEN:
+                return parseExpressionStatement();
+                break;
+            case OPENBRACKET_TOKEN:
+                return parseCompoundStatement();
+                break;
+            case IF_TOKEN:
+                return parseIfStatement();
+                break;
+            case WHILE_TOKEN:
+                return parseIterationStatement();
+                break;
+            case RETURN_TOKEN:
+                return parseReturnStatement();
+                break;
+        }
+    }
 }
