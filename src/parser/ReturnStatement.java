@@ -16,4 +16,8 @@ public class ReturnStatement extends Statement {
         expr = e;
     }
     
+    public void printReturnStatement(String offset){
+        System.out.println(offset + "ReturnStatement");
+        expr.printExpression(offset + "    ")
+    }
 }

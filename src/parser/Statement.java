@@ -9,6 +9,7 @@ package parser;
  * @author Nate H
  */
 public abstract class Statement {
-    
+    public void printStatement(String offset){
+    }
     
 }

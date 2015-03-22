@@ -34,7 +34,7 @@ public class Program {
     
     public void printProgram() {
         String offset = "";
-        System.out.println("Program");
+        System.out.println(offset + "Program");
         for (Declaration decl : declarationList) {
             decl.printDeclaration(offset + "    ");
         }

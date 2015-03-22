@@ -23,4 +23,9 @@ public class VarDeclaration extends Declaration {
         id = i;
     }
     
+    public void printVarDeclaration(String offset){
+        System.out.println(offset + "VarDeclaration");
+        num.printNumeric(offset + "    ");
+        id.printIdentifier(offset + "    ");
+    }
 }

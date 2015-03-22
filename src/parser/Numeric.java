@@ -15,5 +15,8 @@ public class Numeric extends Expression {
     public Numeric (double n){
         num = n;
     }
-    
+    public void printNumeric(String offset){
+        System.out.println(offset + "Numeric");
+        System.out.println(offset + num);
+    }
 }

@@ -22,6 +22,7 @@ public class CompoundStatement extends Statement {
     }
     
     public void printCompoundStatement(String offset) {
+        System.out.println(offset + "CompountStatement");
         for (VarDeclaration vardecl : localDecl) {
             vardecl.printVarDeclaration(offset + "    ");
         }

@@ -17,6 +17,7 @@ public class Identifier {
     }
     
     public void printIdentifier(String offset) {
-        System.out.println(offset + "    " + id);
+        System.out.println(offset + "Identifier");
+        System.out.println(offset + id);
     }
 }
