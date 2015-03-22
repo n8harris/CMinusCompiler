@@ -174,10 +174,7 @@ public class CMinusParser {
         
         while(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || 
               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || 
-              scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
-              scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
-              scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN || 
-              scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN ||  
               scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN || 
               scanner.viewNextToken().getType() == Token.TokenType.OPENCURLY_TOKEN || 
               scanner.viewNextToken().getType() == Token.TokenType.IF_TOKEN || 
