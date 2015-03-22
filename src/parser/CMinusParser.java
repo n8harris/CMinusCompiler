@@ -238,7 +238,7 @@ public class CMinusParser {
        
    } 
    
-   public IterationStatement parseIterationStatement(){
+   public IterationStatement parseIterationStatement() throws Exception{
        match(Token.TokenType.WHILE_TOKEN);
        match(Token.TokenType.OPENPAREN_TOKEN);
        Expression exp = parseExpression();
@@ -246,6 +246,17 @@ public class CMinusParser {
        Statement stmt = parseStatement();
        
        return new IterationStatement(exp, stmt);
+   }
+   
+   public ReturnStatement parseReturnStatement() throws Exception {
+       match(Token.TokenType.RETURN_TOKEN);
+       Expression expr;
+       Token.TokenType currentToken = scanner.viewNextToken().getType();
+       if(currentToken == Token.TokenType.OPENPAREN_TOKEN || currentToken == Token.TokenType.NUM_TOKEN || currentToken == Token.TokenType.ID_TOKEN || currentToken == Token.TokenType.SEMICOLON_TOKEN) {
+            expr = parseExpression();
+       }
+       match(Token.TokenType.SEMICOLON_TOKEN);
+       return new ReturnStatement(expr);
    }
    
    
