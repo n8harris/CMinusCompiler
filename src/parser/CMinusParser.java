@@ -228,7 +228,7 @@ public class CMinusParser {
        Statement thenStmt = parseStatement();
        Statement elseStmt = null;
        
-       if(scanner.viewNextToken().getType().tokenType == Token.TokenType.ELSE_TOKEN) {
+       if(scanner.viewNextToken().getType() == Token.TokenType.ELSE_TOKEN) {
            match(Token.TokenType.ELSE_TOKEN);
            elseStmt = parseStatement();
        }
@@ -237,5 +237,18 @@ public class CMinusParser {
        return returnStmt;
        
    } 
+   
+   public IterationStatement parseIterationStatement(){
+       match(Token.TokenType.WHILE_TOKEN);
+       match(Token.TokenType.OPENPAREN_TOKEN);
+       Expression exp = parseExpression();
+       match(Token.TokenType.CLOSEPAREN_TOKEN);
+       Statement stmt = parseStatement();
+       
+       return new IterationStatement(exp, stmt);
+   }
+   
+   
+   
     
 }
