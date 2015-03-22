@@ -250,7 +250,7 @@ public class CMinusParser {
    
    public ReturnStatement parseReturnStatement() throws Exception {
        match(Token.TokenType.RETURN_TOKEN);
-       Expression expr;
+       Expression expr = null;
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        if(currentToken == Token.TokenType.OPENPAREN_TOKEN || currentToken == Token.TokenType.NUM_TOKEN || currentToken == Token.TokenType.ID_TOKEN || currentToken == Token.TokenType.SEMICOLON_TOKEN) {
             expr = parseExpression();
