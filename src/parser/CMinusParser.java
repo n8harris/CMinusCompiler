@@ -314,9 +314,26 @@ public class CMinusParser {
                id.setArrayData(arrExp);
                Expression retExp = parseExpressionDoublePrime(id);
                return retExp;
+           default:
+               throw new Exception("Error");
                
                
        }
+   }
+   
+   public Expression parseExpressionDoublePrime(Identifier id) throws Exception{
+       Token.TokenType currentToken = scanner.viewNextToken().getType();
+       switch(currentToken){
+           case EQ_TOKEN:
+               Expression exp = parseExpression();
+               return new AssignExpression(id, exp);
+           case PLUS_TOKEN: case MINUS_TOKEN: case MULT_TOKEN: case DIV_TOKEN:
+               BinaryExpression binExp = parseBinaryExpression(id);
+               return binExp;
+           default:
+               throw new Exception("Error");
+       }
+           
    }
    
    
