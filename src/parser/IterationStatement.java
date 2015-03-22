@@ -17,5 +17,10 @@ public class IterationStatement extends Statement {
         expr = e;
         stmt = s;
     }
-    
+    @Override
+    public void printStatement(String offset){
+        System.out.println(offset + "IterationStatement");
+        expr.printExpression(offset + "    ");
+        stmt.printStatement(offset + "    ");
+    }
 }

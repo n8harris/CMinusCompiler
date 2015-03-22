@@ -19,5 +19,11 @@ public class BinaryExpression extends Expression {
         rhs = r;
         operator = o;
     }
+    public void printExpression(String offset){
+        System.out.println(offset + "BinaryExpression");
+        lhs.printExpression(offset + "    ");
+        rhs.printExpression(offset + "    ");
+        System.out.println(offset + operator);
+    }
     
 }
