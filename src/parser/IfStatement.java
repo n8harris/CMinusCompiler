@@ -23,6 +23,13 @@ public class IfStatement extends Statement {
         thenStmt = stmt1;
         elseStmt = stmt2;
     }
+    
+    @Override
+    public void printStatement(String offset){
+        System.out.println(offset + "IfStatement");
+        thenStmt.printStatement(offset + "    ");
+        elseStmt.printStatement(offset + "    ");
+    }
 
     
 }

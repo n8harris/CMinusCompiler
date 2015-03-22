@@ -9,6 +9,7 @@ package parser;
  * @author Nate H
  */
 public abstract class Expression {
-    
+    public void printExpression(String offset){
+    }
     
 }

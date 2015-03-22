@@ -16,5 +16,9 @@ public class ExpressionStatement extends Statement {
         super();
         exp = e;
     }
+    @Override
+    public void printStatement(String offset){
+        exp.printExpression(offset + "    ");
+    }
     
 }

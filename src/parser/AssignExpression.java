@@ -18,4 +18,10 @@ public class AssignExpression extends Expression {
         expr = e;
     }
     
+    public void printExpression(String offset){
+        System.out.println(offset + "AssignExpression");
+        id.printIdentifier(offset + "    ");
+        expr.printExpression(offset + "    ");
+    }
+    
 }

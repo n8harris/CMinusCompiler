@@ -19,5 +19,12 @@ public class CallExpression extends Expression {
         id = i;
         arg = a;
     }
-    
+    @Override
+    public void printExpression(String offset){
+        System.out.println(offset + "CallExpression");
+        id.printIdentifier(offset + "    ");
+        for (Expression expr : arg) {
+            expr.printExpression(offset + "    ");
+        }
+    }
 }
