@@ -187,7 +187,7 @@ public class CMinusParser {
             stmtList.add(parseStatement());
         }
         match(Token.TokenType.CLOSEBRACKET_TOKEN);
-        return new CompoundStatement(localDecl, stmtList);;
+        return new CompoundStatement(localDecl, stmtList);
     }
     
 }
