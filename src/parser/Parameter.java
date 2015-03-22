@@ -11,9 +11,15 @@ package parser;
 public class Parameter extends Expression {
     
     private Identifier id;
+    private Numeric num;
     
     public Parameter(Identifier i){
         id = i;
+    }
+    
+    public Parameter(Identifier i, Numeric n){
+        id = i;
+        num = n;
     }
     
 }

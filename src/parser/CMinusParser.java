@@ -128,7 +128,7 @@ public class CMinusParser {
             Identifier id = parseIdentifier();  
         }
         match(Token.TokenType.OPENPAREN_TOKEN);
-        ArrayList<Parameter> params;
+        ArrayList<Parameter> params = new ArrayList<>();
         params.push(parseParameter());
         while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN) {
             match(Token.TokenType.COMMA_TOKEN);
@@ -137,6 +137,32 @@ public class CMinusParser {
         match(Token.TokenType.CLOSEPAREN_TOKEN);
         CompoundStatement compoundStmt = parseCompoundStatement();
         return new FunctionDeclaration(params, compoundStmt, new Identifier(s));
+    }
+    
+    public Parameter parseParameter() throws Exception{
+        Token.TokenType currentToken = scanner.viewNextToken().getType();
+        switch(currentToken){
+            case INT_TOKEN:
+                match(Token.TokenType.INT_TOKEN);
+                Identifier id = parseIdentifier();
+                if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
+                    match(Token.TokenType.OPENBRACKET_TOKEN);
+                    Numeric num = parseNumeric();
+                    match(Token.TokenType.CLOSEBRACKET_TOKEN);
+                    match(Token.TokenType.SEMICOLON_TOKEN);
+                    return new Parameter(id, num);
+                } else if (scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
+                    match(Token.TokenType.SEMICOLON_TOKEN);
+                    return new Parameter(id);
+                } else {
+                    throw new Exception("Error");
+                }
+            
+            default:
+                throw new Exception("Error");
+                
+            
+        }
     }
     
 }
