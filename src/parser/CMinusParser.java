@@ -259,6 +259,66 @@ public class CMinusParser {
        return new ReturnStatement(expr);
    }
    
+   public Expression parseExpression() throws Exception {
+       Token.TokenType currentToken = scanner.viewNextToken().getType();
+       switch(currentToken){
+           case OPENPAREN_TOKEN:
+               match(Token.TokenType.OPENPAREN_TOKEN);
+               Expression exp = parseExpression();
+               match(Token.TokenType.CLOSEPAREN_TOKEN);
+               BinaryExpression binExp = parseBinaryExpression(exp);
+               return binExp;
+           case NUM_TOKEN:
+               Numeric num = parseNumeric();
+               BinaryExpression bin = parseBinaryExpression(num);
+               return bin;
+           case ID_TOKEN:
+               Identifier id = parseIdentifier();
+               Expression idExp = parseExpressionPrime(id);
+               return idExp;
+           default:
+               throw new Exception("Error");
+       }
+   }
+   
+   public Expression parseExpressionPrime(Identifier id) throws Exception{
+       Token.TokenType currentToken = scanner.viewNextToken().getType();
+       switch(currentToken){
+           case EQ_TOKEN:
+               Expression exp = parseExpression();
+               return new AssignExpression(id, exp);
+           case PLUS_TOKEN: case MINUS_TOKEN: case MULT_TOKEN: case DIV_TOKEN:
+               BinaryExpression binExp = parseBinaryExpression(id);
+               return binExp;
+           case OPENPAREN_TOKEN:
+               match(Token.TokenType.OPENPAREN_TOKEN);
+               ArrayList<Expression> args = new ArrayList<>();
+               if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN){
+                   args.add(parseExpression());
+                   while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN){
+                       match(Token.TokenType.COMMA_TOKEN);
+                       args.add(parseExpression());
+                   }
+               } else if (scanner.viewNextToken().getType() != Token.TokenType.CLOSEPAREN_TOKEN){
+                   throw new Exception("Error");
+               }
+               
+               match(Token.TokenType.CLOSEPAREN_TOKEN);
+               id.setArgs(args);
+               BinaryExpression bExp = parseBinaryExpresion(id);
+               return bExp;
+           case OPENBRACKET_TOKEN:
+               match(Token.TokenType.OPENBRACKET_TOKEN);
+               Expression arrExp = parseExpression();
+               match(Token.TokenType.CLOSEBRACKET_TOKEN);
+               id.setArrayData(arrExp);
+               Expression retExp = parseExpressionDoublePrime(id);
+               return retExp;
+               
+               
+       }
+   }
+   
    
    
     
