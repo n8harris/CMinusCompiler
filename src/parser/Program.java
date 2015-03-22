@@ -32,6 +32,15 @@ public class Program {
         this.declarationList = declarationList;
     }
     
+    public void printProgram() {
+        String offset = "";
+        System.out.println("Program");
+        for (Declaration decl : declarationList) {
+            decl.printDeclaration(offset + "    ");
+        }
+        
+    }
+    
     
     
 }

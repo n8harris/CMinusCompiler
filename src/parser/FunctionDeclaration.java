@@ -22,5 +22,14 @@ public class FunctionDeclaration extends Declaration {
         cmpdStatement = c;
     }
     
+    @Override
+    public void printDeclaration(String offset){
+        for (Parameter param : params) {
+            param.printParameter(offset + "    ");
+        }
+        cmpdStatement.printCompoundStatement(offset + "    ");
+        id.printIdentifier(offset + "    ")
+                
+    }
     
 }

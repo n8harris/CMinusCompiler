@@ -16,5 +16,7 @@ public class Parameter extends Expression {
         id = i;
     }
     
-    
+    public void printParameter(String offset){
+        id.printIdentifier(offset + "    ");
+    }
 }

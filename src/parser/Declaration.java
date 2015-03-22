@@ -8,9 +8,9 @@ package parser;
  *
  * @author Nate H
  */
-public abstract class Declaration {
-    
-    
-    
-    
+public abstract class Declaration {    
+
+public void printDeclaration(String offset){
+}
+
 }

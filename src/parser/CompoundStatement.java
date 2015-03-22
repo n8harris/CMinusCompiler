@@ -21,4 +21,12 @@ public class CompoundStatement extends Statement {
         stmtList = s;
     }
     
+    public void printCompoundStatement(String offset) {
+        for (VarDeclaration vardecl : localDecl) {
+            vardecl.printVarDeclaration(offset + "    ");
+        }
+        for (Statement stmt : stmtList) {
+            stmt.printStatement(offset + "    ");
+        }
+    }
 }

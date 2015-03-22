@@ -16,4 +16,7 @@ public class Identifier {
         id = i;
     }
     
+    public void printIdentifier(String offset) {
+        System.out.println(offset + "    " + id);
+    }
 }

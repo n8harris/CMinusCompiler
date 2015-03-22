@@ -26,7 +26,7 @@ public class CMinusCompiler {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, Exception {
         //First command line argument is input, second is output
         try{
             PushbackReader reader = new PushbackReader(new FileReader(args[0]));
