@@ -14,6 +14,12 @@ public class BinaryExpression extends Expression {
     private Expression rhs;
     private String operator;
     
+    public BinaryExpression(Expression l){
+        lhs = l;
+        rhs = null;
+        operator = null;
+    }
+    
     public BinaryExpression(Expression l, Expression r, String o){
         lhs = l;
         rhs = r;
@@ -21,9 +27,51 @@ public class BinaryExpression extends Expression {
     }
     public void printExpression(String offset){
         System.out.println(offset + "BinaryExpression");
-        lhs.printExpression(offset + "    ");
-        rhs.printExpression(offset + "    ");
-        System.out.println(offset + operator);
+        getLhs().printExpression(offset + "    ");
+        getRhs().printExpression(offset + "    ");
+        System.out.println(offset + getOperator());
+    }
+
+    /**
+     * @return the lhs
+     */
+    public Expression getLhs() {
+        return lhs;
+    }
+
+    /**
+     * @param lhs the lhs to set
+     */
+    public void setLhs(Expression lhs) {
+        this.lhs = lhs;
+    }
+
+    /**
+     * @return the rhs
+     */
+    public Expression getRhs() {
+        return rhs;
+    }
+
+    /**
+     * @param rhs the rhs to set
+     */
+    public void setRhs(Expression rhs) {
+        this.rhs = rhs;
+    }
+
+    /**
+     * @return the operator
+     */
+    public String getOperator() {
+        return operator;
+    }
+
+    /**
+     * @param operator the operator to set
+     */
+    public void setOperator(String operator) {
+        this.operator = operator;
     }
     
 }

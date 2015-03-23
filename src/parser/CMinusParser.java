@@ -148,10 +148,8 @@ public class CMinusParser {
                 if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
                     match(Token.TokenType.OPENBRACKET_TOKEN);
                     match(Token.TokenType.CLOSEBRACKET_TOKEN);
-                    match(Token.TokenType.SEMICOLON_TOKEN);
                     return new Parameter(id);
-                } else if (scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
-                    match(Token.TokenType.SEMICOLON_TOKEN);
+                } else if (scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.CLOSEPAREN_TOKEN){
                     return new Parameter(id);
                 } else {
                     throw new Exception("Error");
@@ -266,11 +264,13 @@ public class CMinusParser {
                match(Token.TokenType.OPENPAREN_TOKEN);
                Expression exp = parseExpression();
                match(Token.TokenType.CLOSEPAREN_TOKEN);
-               BinaryExpression binExp = parseBinaryExpression(exp);
+               BinaryExpression binExp = new BinaryExpression(exp);
+               binExp = parseBinaryExpression(binExp);
                return binExp;
            case NUM_TOKEN:
                Numeric num = parseNumeric();
-               BinaryExpression bin = parseBinaryExpression(num);
+               BinaryExpression bin = new BinaryExpression(num);
+               bin = parseBinaryExpression(bin);
                return bin;
            case ID_TOKEN:
                Identifier id = parseIdentifier();
@@ -288,7 +288,8 @@ public class CMinusParser {
                Expression exp = parseExpression();
                return new AssignExpression(id, exp);
            case PLUS_TOKEN: case MINUS_TOKEN: case MULT_TOKEN: case DIV_TOKEN:
-               BinaryExpression binExp = parseBinaryExpression(id);
+               BinaryExpression binExp = new BinaryExpression(id);
+               binExp = parseBinaryExpression(binExp);
                return binExp;
            case OPENPAREN_TOKEN:
                match(Token.TokenType.OPENPAREN_TOKEN);
@@ -305,7 +306,8 @@ public class CMinusParser {
                
                match(Token.TokenType.CLOSEPAREN_TOKEN);
                id.setArgs(args);
-               BinaryExpression bExp = parseBinaryExpresion(id);
+               BinaryExpression bExp = new BinaryExpression(id);
+               bExp = parseBinaryExpression(bExp);
                return bExp;
            case OPENBRACKET_TOKEN:
                match(Token.TokenType.OPENBRACKET_TOKEN);
@@ -324,16 +326,95 @@ public class CMinusParser {
    public Expression parseExpressionDoublePrime(Identifier id) throws Exception{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
-           case EQ_TOKEN:
+           case ASSIGN_TOKEN:
                Expression exp = parseExpression();
                return new AssignExpression(id, exp);
            case PLUS_TOKEN: case MINUS_TOKEN: case MULT_TOKEN: case DIV_TOKEN:
-               BinaryExpression binExp = parseBinaryExpression(id);
+               BinaryExpression binExp = new BinaryExpression(id);
+               binExp = parseBinaryExpression(binExp);
                return binExp;
            default:
                throw new Exception("Error");
        }
            
+   }
+   
+   public BinaryExpression parseBinaryExpression(Expression id) throws Exception{
+       Token.TokenType currentToken = scanner.viewNextToken().getType();
+       BinaryExpression recBinExp = new BinaryExpression(id);
+       if(currentToken == Token.TokenType.MULT_TOKEN || 
+          currentToken == Token.TokenType.DIV_TOKEN || 
+          currentToken == Token.TokenType.PLUS_TOKEN || 
+          currentToken == Token.TokenType.MINUS_TOKEN || 
+          currentToken == Token.TokenType.LT_TOKEN ||
+          currentToken == Token.TokenType.GT_TOKEN ||
+          currentToken == Token.TokenType.LTEQ_TOKEN ||
+          currentToken == Token.TokenType.GTEQ_TOKEN ||
+          currentToken == Token.TokenType.EQ_TOKEN ||
+          currentToken == Token.TokenType.NOTEQ_TOKEN){
+                String op = scanner.getNextToken().getData().toString();
+                currentToken = scanner.viewNextToken().getType();
+                switch(currentToken){
+                    case OPENPAREN_TOKEN:
+                        match(Token.TokenType.OPENPAREN_TOKEN);
+                        Expression multExp = parseExpression();
+                        match(Token.TokenType.CLOSEPAREN_TOKEN);
+                        recBinExp.setLhs(recBinExp);
+                        recBinExp.setOperator(op);
+                        recBinExp.setRhs(multExp);
+                        return parseBinaryExpression(recBinExp);
+
+                    case ID_TOKEN:
+                        Identifier multId = parseIdentifier();
+                        if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN){
+                           match(Token.TokenType.OPENPAREN_TOKEN);
+                           Expression idMultExp = parseExpression();
+                           ArrayList<Expression> multArgs = new ArrayList<>();
+                           multArgs.add(idMultExp);
+                           while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN){
+                               match(Token.TokenType.COMMA_TOKEN);
+                               multExp = parseExpression();
+                               multArgs.add(multExp);
+                           }
+                           multId.setArgs(multArgs);
+                           match(Token.TokenType.CLOSEPAREN_TOKEN);
+                           recBinExp.setLhs(recBinExp);
+                           recBinExp.setOperator(op);
+                           recBinExp.setRhs(multId);
+                           return parseBinaryExpression(recBinExp);
+                        } else if (scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
+                            match(Token.TokenType.OPENBRACKET_TOKEN);
+                            Expression bracketExpression = parseExpression();
+                            match(Token.TokenType.CLOSEBRACKET_TOKEN);
+                            multId.setArrayData(bracketExpression);
+                            recBinExp.setLhs(recBinExp);
+                            recBinExp.setOperator(op);
+                            recBinExp.setRhs(multId);
+                            return parseBinaryExpression(recBinExp);
+                        } else {
+                            throw new Exception("Error");
+                        }
+
+                    case NUM_TOKEN:
+                        Numeric factorNum = parseNumeric();
+                        recBinExp.setLhs(recBinExp);
+                        recBinExp.setOperator(op);
+                        recBinExp.setRhs(factorNum);
+                        return parseBinaryExpression(recBinExp);
+
+                    default:
+                        throw new Exception("Error");
+
+
+
+
+                }
+
+       } else {
+            return recBinExp;
+       }
+       
+       
    }
    
    
