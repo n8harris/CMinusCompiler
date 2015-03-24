@@ -224,7 +224,7 @@ public class CMinusScanner implements Scanner {
                           c = (char) r;
                           if (c == '/') {
                               currentToken = new Token ( Token.TokenType.CLOSECOMMENT_TOKEN);
-                              state = stateType.DONE;
+                              state = stateType.START;
                           }
                           else {
                               state = stateType.INCOMMENT;

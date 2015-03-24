@@ -83,6 +83,7 @@ public class CMinusParser {
                     match(Token.TokenType.SEMICOLON_TOKEN);
                     return new VarDeclaration(idNum, varDeclID);
                 case SEMICOLON_TOKEN:
+                    match(Token.TokenType.SEMICOLON_TOKEN);
                     return new VarDeclaration(varDeclID);
                 default:
                     throw new Exception("Error");
@@ -98,6 +99,7 @@ public class CMinusParser {
                         match(Token.TokenType.SEMICOLON_TOKEN);
                         return new VarDeclaration(idNum, id);  
                     } else if (scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN) {
+                        match(Token.TokenType.SEMICOLON_TOKEN);
                         return new VarDeclaration(id);
                     } else {
                         throw new Exception("Error");
@@ -117,15 +119,18 @@ public class CMinusParser {
     
     public Numeric parseNumeric() throws Exception{
         if(scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-            return new Numeric((double)scanner.getNextToken().getData());
+            return new Numeric(scanner.getNextToken().getData().toString());
         } else {
             throw new Exception("Error");
         }
     }
     
     public FunctionDeclaration parseFunctionDeclaration(String s) throws Exception {
+            Identifier id;
 	if (s == null){
-            Identifier id = parseIdentifier();  
+            id = parseIdentifier();  
+        } else {
+            id = new Identifier(s);
         }
         match(Token.TokenType.OPENPAREN_TOKEN);
         ArrayList<Parameter> params = new ArrayList<>();
@@ -136,7 +141,7 @@ public class CMinusParser {
         }
         match(Token.TokenType.CLOSEPAREN_TOKEN);
         CompoundStatement compoundStmt = parseCompoundStatement();
-        return new FunctionDeclaration(params, compoundStmt, new Identifier(s));
+        return new FunctionDeclaration(params, compoundStmt, id);
     }
     
     public Parameter parseParameter() throws Exception{
@@ -154,7 +159,9 @@ public class CMinusParser {
                 } else {
                     throw new Exception("Error");
                 }
-            
+            case VOID_TOKEN:
+                match(Token.TokenType.VOID_TOKEN);
+                return null;
             default:
                 throw new Exception("Error");
                 
@@ -163,7 +170,7 @@ public class CMinusParser {
     }
     
     public CompoundStatement parseCompoundStatement() throws Exception {
-        match(Token.TokenType.OPENBRACKET_TOKEN);
+        match(Token.TokenType.OPENCURLY_TOKEN);
         ArrayList<VarDeclaration> localDecl = new ArrayList<>();
         ArrayList<Statement> stmtList = new ArrayList<>();
         while(scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
@@ -181,7 +188,7 @@ public class CMinusParser {
             
             stmtList.add(parseStatement());
         }
-        match(Token.TokenType.CLOSEBRACKET_TOKEN);
+        match(Token.TokenType.CLOSECURLY_TOKEN);
         return new CompoundStatement(localDecl, stmtList);
     }
     
@@ -190,7 +197,7 @@ public class CMinusParser {
         switch(currentToken){
             case OPENPAREN_TOKEN: case NUM_TOKEN: case ID_TOKEN: case SEMICOLON_TOKEN:
                 return parseExpressionStatement();
-            case OPENBRACKET_TOKEN:
+            case OPENCURLY_TOKEN:
                 return parseCompoundStatement();
             case IF_TOKEN:
                 return parseIfStatement();
@@ -211,6 +218,7 @@ public class CMinusParser {
                 return exp;
             case OPENPAREN_TOKEN: case NUM_TOKEN: case ID_TOKEN:
                 exp = new ExpressionStatement(parseExpression());
+                match(Token.TokenType.SEMICOLON_TOKEN);
                 return exp;
             default:
                 throw new Exception("Error");
@@ -250,7 +258,7 @@ public class CMinusParser {
        match(Token.TokenType.RETURN_TOKEN);
        Expression expr = null;
        Token.TokenType currentToken = scanner.viewNextToken().getType();
-       if(currentToken == Token.TokenType.OPENPAREN_TOKEN || currentToken == Token.TokenType.NUM_TOKEN || currentToken == Token.TokenType.ID_TOKEN || currentToken == Token.TokenType.SEMICOLON_TOKEN) {
+       if(currentToken == Token.TokenType.OPENPAREN_TOKEN || currentToken == Token.TokenType.NUM_TOKEN || currentToken == Token.TokenType.ID_TOKEN) {
             expr = parseExpression();
        }
        match(Token.TokenType.SEMICOLON_TOKEN);
@@ -274,7 +282,13 @@ public class CMinusParser {
                return bin;
            case ID_TOKEN:
                Identifier id = parseIdentifier();
-               Expression idExp = parseExpressionPrime(id);
+               Expression idExp;
+               if(scanner.viewNextToken().getType() != Token.TokenType.SEMICOLON_TOKEN && scanner.viewNextToken().getType() != Token.TokenType.CLOSEBRACKET_TOKEN && scanner.viewNextToken().getType() != Token.TokenType.COMMA_TOKEN && scanner.viewNextToken().getType() != Token.TokenType.CLOSEPAREN_TOKEN){
+                    idExp = parseExpressionPrime(id);
+               } else {
+                   idExp = id;
+               }
+               
                return idExp;
            default:
                throw new Exception("Error");
@@ -284,10 +298,20 @@ public class CMinusParser {
    public Expression parseExpressionPrime(Identifier id) throws Exception{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
-           case EQ_TOKEN:
+           case ASSIGN_TOKEN:
+               match(Token.TokenType.ASSIGN_TOKEN);
                Expression exp = parseExpression();
                return new AssignExpression(id, exp);
-           case PLUS_TOKEN: case MINUS_TOKEN: case MULT_TOKEN: case DIV_TOKEN:
+           case PLUS_TOKEN: 
+           case MINUS_TOKEN: 
+           case MULT_TOKEN: 
+           case DIV_TOKEN:
+           case LT_TOKEN:
+           case GT_TOKEN:
+           case LTEQ_TOKEN:
+           case GTEQ_TOKEN:
+           case EQ_TOKEN:
+           case NOTEQ_TOKEN:
                BinaryExpression binExp = new BinaryExpression(id);
                binExp = parseBinaryExpression(binExp);
                return binExp;
@@ -327,21 +351,34 @@ public class CMinusParser {
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
            case ASSIGN_TOKEN:
+               match(Token.TokenType.ASSIGN_TOKEN);
                Expression exp = parseExpression();
                return new AssignExpression(id, exp);
-           case PLUS_TOKEN: case MINUS_TOKEN: case MULT_TOKEN: case DIV_TOKEN:
+           case PLUS_TOKEN: 
+           case MINUS_TOKEN: 
+           case MULT_TOKEN: 
+           case DIV_TOKEN:
+           case LT_TOKEN:
+           case GT_TOKEN:
+           case LTEQ_TOKEN:
+           case GTEQ_TOKEN:
+           case EQ_TOKEN:
+           case NOTEQ_TOKEN:
                BinaryExpression binExp = new BinaryExpression(id);
                binExp = parseBinaryExpression(binExp);
                return binExp;
+           case CLOSEPAREN_TOKEN:
+           case SEMICOLON_TOKEN:
+               return id;
            default:
                throw new Exception("Error");
        }
            
    }
    
-   public BinaryExpression parseBinaryExpression(Expression id) throws Exception{
+   public BinaryExpression parseBinaryExpression(BinaryExpression id) throws Exception{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
-       BinaryExpression recBinExp = new BinaryExpression(id);
+       BinaryExpression recBinExp = id;
        if(currentToken == Token.TokenType.MULT_TOKEN || 
           currentToken == Token.TokenType.DIV_TOKEN || 
           currentToken == Token.TokenType.PLUS_TOKEN || 
@@ -352,16 +389,24 @@ public class CMinusParser {
           currentToken == Token.TokenType.GTEQ_TOKEN ||
           currentToken == Token.TokenType.EQ_TOKEN ||
           currentToken == Token.TokenType.NOTEQ_TOKEN){
-                String op = scanner.getNextToken().getData().toString();
+                Token op = scanner.getNextToken();
                 currentToken = scanner.viewNextToken().getType();
                 switch(currentToken){
                     case OPENPAREN_TOKEN:
                         match(Token.TokenType.OPENPAREN_TOKEN);
                         Expression multExp = parseExpression();
                         match(Token.TokenType.CLOSEPAREN_TOKEN);
-                        recBinExp.setLhs(recBinExp);
-                        recBinExp.setOperator(op);
-                        recBinExp.setRhs(multExp);
+                        if(recBinExp.getOperator() == null){
+                                Identifier tempId = (Identifier)recBinExp.getLhs();
+                                recBinExp.setLhs(tempId);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multExp);
+                            } else {
+                                BinaryExpression tempBinExp = recBinExp;
+                                recBinExp.setLhs(tempBinExp);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multExp);
+                            }
                         return parseBinaryExpression(recBinExp);
 
                     case ID_TOKEN:
@@ -378,28 +423,78 @@ public class CMinusParser {
                            }
                            multId.setArgs(multArgs);
                            match(Token.TokenType.CLOSEPAREN_TOKEN);
-                           recBinExp.setLhs(recBinExp);
-                           recBinExp.setOperator(op);
-                           recBinExp.setRhs(multId);
+                           if(recBinExp.getOperator() == null){
+                                Identifier tempId = (Identifier)recBinExp.getLhs();
+                                recBinExp.setLhs(tempId);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multId);
+                            } else {
+                                BinaryExpression tempBinExp = recBinExp;
+                                recBinExp.setLhs(tempBinExp);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multId);
+                            }
                            return parseBinaryExpression(recBinExp);
                         } else if (scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
                             match(Token.TokenType.OPENBRACKET_TOKEN);
                             Expression bracketExpression = parseExpression();
                             match(Token.TokenType.CLOSEBRACKET_TOKEN);
                             multId.setArrayData(bracketExpression);
-                            recBinExp.setLhs(recBinExp);
-                            recBinExp.setOperator(op);
-                            recBinExp.setRhs(multId);
+                            if(recBinExp.getOperator() == null){
+                                Identifier tempId = (Identifier)recBinExp.getLhs();
+                                recBinExp.setLhs(tempId);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multId);
+                            } else {
+                                BinaryExpression tempBinExp = recBinExp;
+                                recBinExp.setLhs(tempBinExp);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multId);
+                            }
                             return parseBinaryExpression(recBinExp);
-                        } else {
+                        } else if(scanner.viewNextToken().getType() == Token.TokenType.CLOSEPAREN_TOKEN || 
+                                  scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN ||
+                                  scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
+                                  scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN || 
+                                  scanner.viewNextToken().getType() == Token.TokenType.PLUS_TOKEN || 
+                                  scanner.viewNextToken().getType() == Token.TokenType.MINUS_TOKEN || 
+                                  scanner.viewNextToken().getType() == Token.TokenType.LT_TOKEN ||
+                                  scanner.viewNextToken().getType() == Token.TokenType.GT_TOKEN ||
+                                  scanner.viewNextToken().getType() == Token.TokenType.LTEQ_TOKEN ||
+                                  scanner.viewNextToken().getType() == Token.TokenType.GTEQ_TOKEN ||
+                                  scanner.viewNextToken().getType() == Token.TokenType.EQ_TOKEN ||
+                                  scanner.viewNextToken().getType() == Token.TokenType.NOTEQ_TOKEN){
+                            if(recBinExp.getOperator() == null){
+                                Expression tempId = recBinExp.getLhs();
+                                recBinExp.setLhs(tempId);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multId);
+                            } else {
+                                BinaryExpression tempBinExp = recBinExp;
+                                recBinExp.setLhs(tempBinExp);
+                                recBinExp.setOperator(op);
+                                recBinExp.setRhs(multId);
+                            }
+                            
+                            return parseBinaryExpression(recBinExp);
+                        }
+                        else {
                             throw new Exception("Error");
                         }
 
                     case NUM_TOKEN:
                         Numeric factorNum = parseNumeric();
-                        recBinExp.setLhs(recBinExp);
-                        recBinExp.setOperator(op);
-                        recBinExp.setRhs(factorNum);
+                        if(recBinExp.getOperator() == null){
+                            Identifier tempId = (Identifier)recBinExp.getLhs();
+                            recBinExp.setLhs(tempId);
+                            recBinExp.setOperator(op);
+                            recBinExp.setRhs(factorNum);
+                        } else {
+                            BinaryExpression tempBinExp = recBinExp;
+                            recBinExp.setLhs(tempBinExp);
+                            recBinExp.setOperator(op);
+                            recBinExp.setRhs(factorNum);
+                        }
                         return parseBinaryExpression(recBinExp);
 
                     default:

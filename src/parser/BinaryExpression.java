@@ -4,6 +4,8 @@
  */
 package parser;
 
+import scanner.Token;
+
 /**
  *
  * @author Nate H
@@ -12,7 +14,7 @@ public class BinaryExpression extends Expression {
     
     private Expression lhs;
     private Expression rhs;
-    private String operator;
+    private Token operator;
     
     public BinaryExpression(Expression l){
         lhs = l;
@@ -20,7 +22,7 @@ public class BinaryExpression extends Expression {
         operator = null;
     }
     
-    public BinaryExpression(Expression l, Expression r, String o){
+    public BinaryExpression(Expression l, Expression r, Token o){
         lhs = l;
         rhs = r;
         operator = o;
@@ -63,14 +65,14 @@ public class BinaryExpression extends Expression {
     /**
      * @return the operator
      */
-    public String getOperator() {
+    public Token getOperator() {
         return operator;
     }
 
     /**
      * @param operator the operator to set
      */
-    public void setOperator(String operator) {
+    public void setOperator(Token operator) {
         this.operator = operator;
     }
     

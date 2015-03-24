@@ -10,9 +10,9 @@ package parser;
  */
 public class Numeric extends Expression {
     
-    private double num;
+    private String num;
     
-    public Numeric (double n){
+    public Numeric (String n){
         num = n;
     }
     public void printNumeric(String offset){

@@ -1,5 +1,8 @@
-void quicksort(int x[10],int first,int last){
-    int pivot,j,temp,i;
+void quicksort(int x[],int first,int last){
+    int pivot;
+    int j;
+    int temp; 
+    int i;
 
      if(first<last){
          pivot=first;
@@ -7,10 +10,12 @@ void quicksort(int x[10],int first,int last){
          j=last;
 
          while(i<j){
-             while(x[i]<=x[pivot])
-                 i++;
-             while(x[j]>x[pivot])
-                 j--;
+             while(x[i]<=x[pivot]){
+                 i = i + 1;
+			}
+             while(x[j]>x[pivot]){
+                 j = j + 1;
+			}
              if(i<j){
                  temp=x[i];
                   x[i]=x[j];
