@@ -27,7 +27,7 @@ public class CompoundStatement extends Statement {
         writer.write(offset + "CompoundStatement");
         writer.newLine();
         for (VarDeclaration vardecl : getLocalDecl()) {
-            vardecl.printVarDeclaration(offset + "    ", writer);
+            vardecl.printDeclaration(offset + "    ", writer);
         }
         
         for (Statement stmt : getStmtList()) {

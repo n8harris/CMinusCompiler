@@ -5,6 +5,7 @@
 package parser;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.io.BufferedWriter;
  */
 public abstract class Declaration {    
 
-public void printDeclaration(String offset, BufferedWriter writer){
+public void printDeclaration(String offset, BufferedWriter writer) throws IOException{
 }
 
 }

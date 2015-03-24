@@ -26,7 +26,8 @@ public class VarDeclaration extends Declaration {
         id = i;
     }
     
-    public void printVarDeclaration(String offset, BufferedWriter writer) throws IOException{
+    @Override
+    public void printDeclaration(String offset, BufferedWriter writer) throws IOException{
         writer.write(offset + "VarDeclaration");
         writer.newLine();
         if(num != null){
