@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -25,10 +28,14 @@ public class IfStatement extends Statement {
     }
     
     @Override
-    public void printStatement(String offset){
-        System.out.println(offset + "IfStatement");
-        thenStmt.printStatement(offset + "    ");
-        elseStmt.printStatement(offset + "    ");
+    public void printStatement(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "IfStatement");
+        writer.newLine();
+        expr.printExpression(offset + "    ", writer);
+        thenStmt.printStatement(offset + "    ", writer);
+        if(elseStmt != null){
+            elseStmt.printStatement(offset + "    ", writer);
+        }
     }
 
     

@@ -4,6 +4,11 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Nate H
@@ -15,8 +20,14 @@ public class Numeric extends Expression {
     public Numeric (String n){
         num = n;
     }
-    public void printNumeric(String offset){
-        System.out.println(offset + "Numeric");
-        System.out.println(offset + num);
+    public void printExpression(String offset, BufferedWriter writer){
+        try {
+            writer.write(offset + "Numeric");
+            writer.newLine();
+            writer.write(offset + "    " + num);
+            writer.newLine();
+        } catch (IOException ex) {
+            Logger.getLogger(Numeric.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

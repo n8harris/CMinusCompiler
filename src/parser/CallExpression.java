@@ -4,6 +4,8 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -20,11 +22,12 @@ public class CallExpression extends Expression {
         arg = a;
     }
     @Override
-    public void printExpression(String offset){
-        System.out.println(offset + "CallExpression");
-        id.printIdentifier(offset + "    ");
+    public void printExpression(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "CallExpression");
+        writer.newLine();
+        id.printExpression(offset + "    ", writer);
         for (Expression expr : arg) {
-            expr.printExpression(offset + "    ");
+            expr.printExpression(offset + "    ", writer);
         }
     }
 }

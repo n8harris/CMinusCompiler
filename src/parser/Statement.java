@@ -4,12 +4,15 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
  */
 public abstract class Statement {
-    public void printStatement(String offset){
+    public void printStatement(String offset, BufferedWriter writer) throws IOException{
     }
     
 }

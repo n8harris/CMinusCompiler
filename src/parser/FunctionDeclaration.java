@@ -4,7 +4,11 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,13 +27,23 @@ public class FunctionDeclaration extends Declaration {
     }
     
     @Override
-    public void printDeclaration(String offset){
-        System.out.println(offset + "FunctionDeclaration");
-        for (Parameter param : params) {
-            param.printParameter(offset + "    ");
+    public void printDeclaration(String offset, BufferedWriter writer){
+        try {
+            writer.write(offset + "FunctionDeclaration");
+            writer.newLine();
+            id.printExpression(offset + "    ", writer);
+            if(params.size() > 0){
+                for (Parameter param : params) {
+                    if(param != null){
+                        param.printParameter(offset + "    ", writer);
+                    }
+                }
+            }
+            cmpdStatement.printStatement(offset + "    ", writer);
+        } catch (IOException ex) {
+            Logger.getLogger(FunctionDeclaration.class.getName()).log(Level.SEVERE, null, ex);
         }
-        cmpdStatement.printCompoundStatement(offset + "    ");
-        id.printIdentifier(offset + "    ");               
+                       
     }
     
 }

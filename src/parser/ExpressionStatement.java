@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -17,8 +20,8 @@ public class ExpressionStatement extends Statement {
         exp = e;
     }
     @Override
-    public void printStatement(String offset){
-        exp.printExpression(offset + "    ");
+    public void printStatement(String offset, BufferedWriter writer) throws IOException{
+        exp.printExpression(offset, writer);
     }
     
 }

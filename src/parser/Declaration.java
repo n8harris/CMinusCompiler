@@ -4,13 +4,15 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+
 /**
  *
  * @author Nate H
  */
 public abstract class Declaration {    
 
-public void printDeclaration(String offset){
+public void printDeclaration(String offset, BufferedWriter writer){
 }
 
 }

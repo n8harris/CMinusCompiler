@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -18,10 +21,11 @@ public class AssignExpression extends Expression {
         expr = e;
     }
     
-    public void printExpression(String offset){
-        System.out.println(offset + "AssignExpression");
-        id.printIdentifier(offset + "    ");
-        expr.printExpression(offset + "    ");
+    public void printExpression(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "AssignExpression");
+        writer.newLine();
+        id.printExpression(offset + "    ", writer);
+        expr.printExpression(offset + "    ", writer);
     }
     
 }

@@ -4,7 +4,11 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -30,9 +34,27 @@ public class Identifier extends Expression {
         args = a;
     }
     
-    public void printIdentifier(String offset) {
-        System.out.println(offset + "Identifier");
-        System.out.println(offset + getId());
+    public void printExpression(String offset, BufferedWriter writer) {
+        try {
+            writer.write(offset + "Identifier");
+            writer.newLine();
+            writer.write(offset + "    " + getId());
+            writer.newLine();
+            if(arrayData != null){
+                writer.write(offset + "    " + "ArrayExpression");
+                writer.newLine();
+                getArrayData().printExpression(offset + "        ", writer);
+            }
+            if(args != null){
+                writer.write(offset + "    " + "Args:");
+                writer.newLine();
+                for (Expression exp : getArgs()) {
+                    exp.printExpression(offset + "        ", writer);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Identifier.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

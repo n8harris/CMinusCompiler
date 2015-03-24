@@ -12,7 +12,7 @@ import scanner.Token;
  *
  * @author Nate H
  */
-public class CMinusParser {
+public class CMinusParser implements Parser {
     
     private CMinusScanner scanner;
     
@@ -20,11 +20,13 @@ public class CMinusParser {
         scanner = scan;
     }
     
+    @Override
     public Program startParse() throws Exception{
             
             return parseProgram();
     }
     
+    @Override
     public void match(Token.TokenType t) throws Exception{
         if(scanner.viewNextToken().getType() == t){
             scanner.getNextToken();
@@ -33,6 +35,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public Program parseProgram() throws Exception{
         ArrayList<Declaration> declList = new ArrayList<>();
         while(scanner.viewNextToken().getType() == Token.TokenType.VOID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
@@ -44,6 +47,7 @@ public class CMinusParser {
         
     }
     
+    @Override
     public Declaration parseDeclaration() throws Exception{
         switch(scanner.viewNextToken().getType()) {
             case VOID_TOKEN:
@@ -72,6 +76,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public VarDeclaration parseVarDeclaration(String s) throws Exception{
         if(s != null){
             Identifier varDeclID = new Identifier(s);
@@ -109,6 +114,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public Identifier parseIdentifier() throws Exception{
         if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN){
             return new Identifier(scanner.getNextToken().getData().toString());
@@ -117,6 +123,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public Numeric parseNumeric() throws Exception{
         if(scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
             return new Numeric(scanner.getNextToken().getData().toString());
@@ -125,6 +132,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public FunctionDeclaration parseFunctionDeclaration(String s) throws Exception {
             Identifier id;
 	if (s == null){
@@ -169,6 +177,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public CompoundStatement parseCompoundStatement() throws Exception {
         match(Token.TokenType.OPENCURLY_TOKEN);
         ArrayList<VarDeclaration> localDecl = new ArrayList<>();
@@ -192,6 +201,7 @@ public class CMinusParser {
         return new CompoundStatement(localDecl, stmtList);
     }
     
+    @Override
     public Statement parseStatement() throws Exception{
         Token.TokenType currentToken = scanner.viewNextToken().getType();
         switch(currentToken){
@@ -210,6 +220,7 @@ public class CMinusParser {
         }
     }
     
+    @Override
     public ExpressionStatement parseExpressionStatement() throws Exception{
         ExpressionStatement exp = null;
         Token.TokenType currentToken = scanner.viewNextToken().getType();
@@ -226,6 +237,7 @@ public class CMinusParser {
         
     }
     
+    @Override
    public Statement parseIfStatement() throws Exception{
        match(Token.TokenType.IF_TOKEN);
        match(Token.TokenType.OPENPAREN_TOKEN);
@@ -244,6 +256,7 @@ public class CMinusParser {
        
    } 
    
+    @Override
    public IterationStatement parseIterationStatement() throws Exception{
        match(Token.TokenType.WHILE_TOKEN);
        match(Token.TokenType.OPENPAREN_TOKEN);
@@ -254,6 +267,7 @@ public class CMinusParser {
        return new IterationStatement(exp, stmt);
    }
    
+    @Override
    public ReturnStatement parseReturnStatement() throws Exception {
        match(Token.TokenType.RETURN_TOKEN);
        Expression expr = null;
@@ -265,6 +279,7 @@ public class CMinusParser {
        return new ReturnStatement(expr);
    }
    
+    @Override
    public Expression parseExpression() throws Exception {
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
@@ -295,6 +310,7 @@ public class CMinusParser {
        }
    }
    
+    @Override
    public Expression parseExpressionPrime(Identifier id) throws Exception{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
@@ -347,6 +363,7 @@ public class CMinusParser {
        }
    }
    
+    @Override
    public Expression parseExpressionDoublePrime(Identifier id) throws Exception{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
@@ -376,6 +393,7 @@ public class CMinusParser {
            
    }
    
+    @Override
    public BinaryExpression parseBinaryExpression(BinaryExpression id) throws Exception{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        BinaryExpression recBinExp = id;
@@ -402,7 +420,7 @@ public class CMinusParser {
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multExp);
                             } else {
-                                BinaryExpression tempBinExp = recBinExp;
+                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
                                 recBinExp.setLhs(tempBinExp);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multExp);
@@ -424,12 +442,17 @@ public class CMinusParser {
                            multId.setArgs(multArgs);
                            match(Token.TokenType.CLOSEPAREN_TOKEN);
                            if(recBinExp.getOperator() == null){
-                                Identifier tempId = (Identifier)recBinExp.getLhs();
+                                Expression tempId = null;
+                                if(recBinExp.getLhs() instanceof Numeric){
+                                    tempId = (Numeric)recBinExp.getLhs();
+                                } else {
+                                    tempId = (Identifier)recBinExp.getLhs();
+                                }
                                 recBinExp.setLhs(tempId);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multId);
                             } else {
-                                BinaryExpression tempBinExp = recBinExp;
+                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
                                 recBinExp.setLhs(tempBinExp);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multId);
@@ -441,12 +464,17 @@ public class CMinusParser {
                             match(Token.TokenType.CLOSEBRACKET_TOKEN);
                             multId.setArrayData(bracketExpression);
                             if(recBinExp.getOperator() == null){
-                                Identifier tempId = (Identifier)recBinExp.getLhs();
+                                Expression tempId = null;
+                                if(recBinExp.getLhs() instanceof Numeric){
+                                    tempId = (Numeric)recBinExp.getLhs();
+                                } else {
+                                    tempId = (Identifier)recBinExp.getLhs();
+                                }
                                 recBinExp.setLhs(tempId);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multId);
                             } else {
-                                BinaryExpression tempBinExp = recBinExp;
+                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
                                 recBinExp.setLhs(tempBinExp);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multId);
@@ -465,12 +493,17 @@ public class CMinusParser {
                                   scanner.viewNextToken().getType() == Token.TokenType.EQ_TOKEN ||
                                   scanner.viewNextToken().getType() == Token.TokenType.NOTEQ_TOKEN){
                             if(recBinExp.getOperator() == null){
-                                Expression tempId = recBinExp.getLhs();
+                                Expression tempId = null;
+                                if(recBinExp.getLhs() instanceof Numeric){
+                                    tempId = (Numeric)recBinExp.getLhs();
+                                } else {
+                                    tempId = (Identifier)recBinExp.getLhs();
+                                }
                                 recBinExp.setLhs(tempId);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multId);
                             } else {
-                                BinaryExpression tempBinExp = recBinExp;
+                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
                                 recBinExp.setLhs(tempBinExp);
                                 recBinExp.setOperator(op);
                                 recBinExp.setRhs(multId);
@@ -485,12 +518,17 @@ public class CMinusParser {
                     case NUM_TOKEN:
                         Numeric factorNum = parseNumeric();
                         if(recBinExp.getOperator() == null){
-                            Identifier tempId = (Identifier)recBinExp.getLhs();
+                            Expression tempId = null;
+                            if(recBinExp.getLhs() instanceof Numeric){
+                                tempId = (Numeric)recBinExp.getLhs();
+                            } else {
+                                tempId = (Identifier)recBinExp.getLhs();
+                            }
                             recBinExp.setLhs(tempId);
                             recBinExp.setOperator(op);
                             recBinExp.setRhs(factorNum);
                         } else {
-                            BinaryExpression tempBinExp = recBinExp;
+                            BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
                             recBinExp.setLhs(tempBinExp);
                             recBinExp.setOperator(op);
                             recBinExp.setRhs(factorNum);

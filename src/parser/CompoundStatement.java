@@ -4,6 +4,8 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -21,13 +23,43 @@ public class CompoundStatement extends Statement {
         stmtList = s;
     }
     
-    public void printCompoundStatement(String offset) {
-        System.out.println(offset + "CompountStatement");
-        for (VarDeclaration vardecl : localDecl) {
-            vardecl.printVarDeclaration(offset + "    ");
+    public void printStatement(String offset, BufferedWriter writer) throws IOException {
+        writer.write(offset + "CompoundStatement");
+        writer.newLine();
+        for (VarDeclaration vardecl : getLocalDecl()) {
+            vardecl.printVarDeclaration(offset + "    ", writer);
         }
-        for (Statement stmt : stmtList) {
-            stmt.printStatement(offset + "    ");
+        
+        for (Statement stmt : getStmtList()) {
+            stmt.printStatement(offset + "    ", writer);
         }
+    }
+
+    /**
+     * @return the localDecl
+     */
+    public ArrayList<VarDeclaration> getLocalDecl() {
+        return localDecl;
+    }
+
+    /**
+     * @param localDecl the localDecl to set
+     */
+    public void setLocalDecl(ArrayList<VarDeclaration> localDecl) {
+        this.localDecl = localDecl;
+    }
+
+    /**
+     * @return the stmtList
+     */
+    public ArrayList<Statement> getStmtList() {
+        return stmtList;
+    }
+
+    /**
+     * @param stmtList the stmtList to set
+     */
+    public void setStmtList(ArrayList<Statement> stmtList) {
+        this.stmtList = stmtList;
     }
 }

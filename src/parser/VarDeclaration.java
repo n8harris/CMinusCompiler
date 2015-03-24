@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -23,9 +26,14 @@ public class VarDeclaration extends Declaration {
         id = i;
     }
     
-    public void printVarDeclaration(String offset){
-        System.out.println(offset + "VarDeclaration");
-        num.printNumeric(offset + "    ");
-        id.printIdentifier(offset + "    ");
+    public void printVarDeclaration(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "VarDeclaration");
+        writer.newLine();
+        if(num != null){
+            writer.write(offset + "    " + "ArraySize");
+            writer.newLine();
+            num.printExpression(offset + "        ", writer);
+        }
+        id.printExpression(offset + "    ", writer);
     }
 }

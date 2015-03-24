@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -16,8 +19,9 @@ public class Parameter extends Expression {
         id = i;
     }
     
-    public void printParameter(String offset){
-        System.out.println(offset + "Parameter");
-        id.printIdentifier(offset + "    ");
+    public void printParameter(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "Parameter");
+        writer.newLine();
+        id.printExpression(offset + "    ", writer);
     }
 }

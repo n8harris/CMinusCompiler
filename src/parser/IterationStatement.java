@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -18,9 +21,10 @@ public class IterationStatement extends Statement {
         stmt = s;
     }
     @Override
-    public void printStatement(String offset){
-        System.out.println(offset + "IterationStatement");
-        expr.printExpression(offset + "    ");
-        stmt.printStatement(offset + "    ");
+    public void printStatement(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "IterationStatement");
+        writer.newLine();
+        expr.printExpression(offset + "    ", writer);
+        stmt.printStatement(offset + "    ", writer);
     }
 }

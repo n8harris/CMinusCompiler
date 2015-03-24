@@ -4,6 +4,8 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -32,12 +34,14 @@ public class Program {
         this.declarationList = declarationList;
     }
     
-    public void printProgram() {
+    public void printProgram(BufferedWriter writer) throws IOException {
         String offset = "";
-        System.out.println(offset + "Program");
+        writer.write(offset + "Program");
+        writer.newLine();
         for (Declaration decl : declarationList) {
-            decl.printDeclaration(offset + "    ");
+            decl.printDeclaration(offset + "    ", writer);
         }
+        writer.close();
         
     }
     

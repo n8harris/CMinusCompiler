@@ -4,6 +4,9 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Nate H
@@ -18,8 +21,11 @@ public class ReturnStatement extends Statement {
     
     
     @Override
-    public void printStatement(String offset){
-        System.out.println(offset + "ReturnStatement");
-        expr.printExpression(offset + "    ");
+    public void printStatement(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "ReturnStatement");
+        writer.newLine();
+        if(expr != null){
+            expr.printExpression(offset + "    ", writer);
+        }
     }
 }

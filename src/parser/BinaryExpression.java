@@ -4,6 +4,10 @@
  */
 package parser;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import scanner.Token;
 
 /**
@@ -16,6 +20,12 @@ public class BinaryExpression extends Expression {
     private Expression rhs;
     private Token operator;
     
+    public BinaryExpression(BinaryExpression b){
+        lhs = b.lhs;
+        operator = b.operator;
+        rhs = b.rhs;
+    }
+    
     public BinaryExpression(Expression l){
         lhs = l;
         rhs = null;
@@ -27,11 +37,66 @@ public class BinaryExpression extends Expression {
         rhs = r;
         operator = o;
     }
-    public void printExpression(String offset){
-        System.out.println(offset + "BinaryExpression");
-        getLhs().printExpression(offset + "    ");
-        getRhs().printExpression(offset + "    ");
-        System.out.println(offset + getOperator());
+    public void printExpression(String offset, BufferedWriter writer) throws IOException{
+        writer.write(offset + "Expression");
+        writer.newLine();
+        if(operator != null){
+            try {
+                Token.TokenType operatorToken = getOperator().getType();
+                switch(operatorToken){
+                    case PLUS_TOKEN:
+                        writer.write(offset + "    " + "+");
+                        writer.newLine();
+                        break;
+                    case MINUS_TOKEN: 
+                        writer.write(offset + "    " + "-");
+                        writer.newLine();
+                        break;
+                    case MULT_TOKEN: 
+                        writer.write(offset + "    " + "*");
+                        writer.newLine();
+                        break;
+                    case DIV_TOKEN:
+                        writer.write(offset + "    " + "/");
+                        writer.newLine();
+                        break;
+                    case LT_TOKEN:
+                        writer.write(offset + "    " + "<");
+                        writer.newLine();
+                        break;
+                    case GT_TOKEN:
+                        writer.write(offset + "    " + ">");
+                        writer.newLine();
+                        break;
+                    case LTEQ_TOKEN:
+                        writer.write(offset + "    " + "<=");
+                        writer.newLine();
+                        break;
+                    case GTEQ_TOKEN:
+                        writer.write(offset + "    " + ">=");
+                        writer.newLine();
+                        break;
+                    case EQ_TOKEN:
+                        writer.write(offset + "    " + "==");
+                        writer.newLine();
+                        break;
+                    case NOTEQ_TOKEN:
+                        writer.write(offset + "    " + "!=");
+                        writer.newLine();
+                        break;
+                    default:
+                        throw new Exception("Error");
+               }
+            } catch (Exception ex) {
+                Logger.getLogger(BinaryExpression.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        getLhs().printExpression(offset + "        ", writer);
+        if(rhs != null){
+            getRhs().printExpression(offset + "        ", writer);
+        }
+        
     }
 
     /**

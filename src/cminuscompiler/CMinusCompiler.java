@@ -30,9 +30,11 @@ public class CMinusCompiler {
         //First command line argument is input, second is output
         try{
             PushbackReader reader = new PushbackReader(new FileReader(args[0]));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(args[0].substring(0, args[0].lastIndexOf(".")) + "Tree.ast"));
             CMinusScanner scanner = new CMinusScanner(reader);
             CMinusParser parser = new CMinusParser(scanner);
             Program parseResult = parser.startParse();
+            parseResult.printProgram(writer);
 
         }
         catch(FileNotFoundException e){
