@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parser;
 
 import java.util.ArrayList;
@@ -11,6 +7,8 @@ import scanner.Token;
 /**
  *
  * @author Nate H
+ * @author Jake P
+ * 
  */
 public class CMinusParser implements Parser {
     
@@ -20,6 +18,7 @@ public class CMinusParser implements Parser {
         scanner = scan;
     }
     
+    //Starts the parse. Again, this works recursively
     @Override
     public Program startParse() throws ParseException {
             Program p = null;

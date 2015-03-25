@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cminuscompiler;
 
 import scanner.CMinusScanner;
@@ -19,7 +13,7 @@ import parser.Program;
 
 /**
  *
- * @author Jake-
+ * @author Jake P
  */
 public class CMinusCompiler {
 
@@ -32,8 +26,12 @@ public class CMinusCompiler {
             PushbackReader reader = new PushbackReader(new FileReader(args[0]));
             BufferedWriter writer = new BufferedWriter(new FileWriter(args[0].substring(0, args[0].lastIndexOf(".")) + "Tree.ast"));
             CMinusScanner scanner = new CMinusScanner(reader);
+            //These two lines create the parser and start it. As the name 'recursive descent' implies, it works recursively.
             CMinusParser parser = new CMinusParser(scanner);
             Program parseResult = parser.startParse();
+            
+            //Calls the print routine. This works recursively as well, each Class's print routine will call
+            //the appropriate print function on any child objects that it has, or print the data for terminals
             parseResult.printProgram(writer);
 
         }

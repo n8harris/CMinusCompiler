@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parser;
 
 import java.io.BufferedWriter;
@@ -22,7 +18,8 @@ public class CompoundStatement extends Statement {
         localDecl = l;
         stmtList = s;
     }
-    
+    //Prints out the contents of BinaryExpression by recursively calling each objects
+    //print function, or by printing the data in the case of a terminal.
     public void printStatement(String offset, BufferedWriter writer) throws IOException {
         writer.write(offset + "CompoundStatement");
         writer.newLine();

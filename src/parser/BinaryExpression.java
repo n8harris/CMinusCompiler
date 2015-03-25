@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parser;
 
 import java.io.BufferedWriter;
@@ -37,6 +33,9 @@ public class BinaryExpression extends Expression {
         rhs = r;
         operator = o;
     }
+    
+    //Prints out the contents of BinaryExpression by recursively calling each objects
+    //print function, or by printing the data in the case of a terminal.
     public void printExpression(String offset, BufferedWriter writer) throws IOException{
         writer.write(offset + "Expression");
         writer.newLine();

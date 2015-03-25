@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parser;
 
 import java.io.BufferedWriter;
@@ -13,6 +9,7 @@ import java.io.IOException;
  */
 public abstract class Declaration {    
 
+//Sets up a prototype for the print functions in classes that extend this one.
 public void printDeclaration(String offset, BufferedWriter writer) throws IOException{
 }
 
