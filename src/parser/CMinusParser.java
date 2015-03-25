@@ -14,17 +14,19 @@ public class CMinusParser implements Parser {
     
     private CMinusScanner scanner;
     
+    //Constructor for CMinusScanner
     public CMinusParser(CMinusScanner scan){
         scanner = scan;
     }
     
-    //Starts the parse. Again, this works recursively
+    //Starts the parse
     @Override
     public Program startParse() throws ParseException {
             Program p = null;
             try {
                 p = parseProgram();
             } catch (ParseException e){
+                //Prints out the error message and stops the parse if one occurs
                 System.out.println(e.getMessage());
                 System.exit(0);
             }
@@ -33,13 +35,20 @@ public class CMinusParser implements Parser {
     
     @Override
     public void match(Token.TokenType t) throws ParseException{
+        //Matches and munches the token parameter. If it doesn't match,
+        //an error is thrown.
         if(scanner.viewNextToken().getType() == t){
             scanner.getNextToken();
         } else {
-            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + ", looking for " + t.toString());
+            //Print out data if token is NUM or ID
+            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                         ": " + scanner.viewNextToken().getData().toString() + ", looking for " + 
+                                         t.toString());
             } else {
-                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ", looking for " + t.toString());
+                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                         ", looking for " + t.toString());
             }
             
         }
@@ -48,8 +57,11 @@ public class CMinusParser implements Parser {
     @Override
     public Program parseProgram() throws ParseException{
         ArrayList<Declaration> declList = new ArrayList<>();
-
-        while(scanner.viewNextToken().getType() == Token.TokenType.VOID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
+        
+        //Iterate through all of the declarations whether they be var-decls
+        //or fun-decls
+        while(scanner.viewNextToken().getType() == Token.TokenType.VOID_TOKEN || 
+              scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
             declList.add(parseDeclaration());
         }
 
@@ -71,25 +83,33 @@ public class CMinusParser implements Parser {
                 return varDecl;
             case ID_TOKEN:
                 Token t = scanner.getNextToken();
-                if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
+                //Check first sets
+                if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
                     VarDeclaration vDecl = parseVarDeclaration(t.getData().toString());
                     return vDecl;
                 } else if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN){
                     FunctionDeclaration fDecl = parseFunctionDeclaration(t.getData().toString());
                     return fDecl;
                 } else {
-                    if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseDeclaration()");
+                    if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                       scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                 ": " + scanner.viewNextToken().getData().toString() + " in parseDeclaration()");
                     } else {
-                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseDeclaration()");
+                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                 " in parseDeclaration()");
                     }
                 }
                 
             default:
-                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseDeclaration()");
+                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseDeclaration()");
                 } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseDeclaration()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             " in parseDeclaration()");
                 }
                 
         }
@@ -97,12 +117,13 @@ public class CMinusParser implements Parser {
     
     @Override
     public VarDeclaration parseVarDeclaration(String s) throws ParseException{
+        //Checks if there is no Identifier already associated
         if(s != null){
             Identifier varDeclID = new Identifier(s);
             switch(scanner.viewNextToken().getType()) {
                 case OPENBRACKET_TOKEN:
                     match(Token.TokenType.OPENBRACKET_TOKEN);
-                    Numeric idNum = parseNumeric();
+                    Numeric idNum = parseNumeric(); //Get array data
                     match(Token.TokenType.CLOSEBRACKET_TOKEN);
                     match(Token.TokenType.SEMICOLON_TOKEN);
                     return new VarDeclaration(idNum, varDeclID);
@@ -110,10 +131,13 @@ public class CMinusParser implements Parser {
                     match(Token.TokenType.SEMICOLON_TOKEN);
                     return new VarDeclaration(varDeclID);
                 default:
-                    if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseVarDeclaration()");
+                    if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                       scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                 ": " + scanner.viewNextToken().getData().toString() + " in parseVarDeclaration()");
                     } else {
-                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseVarDeclaration()");
+                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                 " in parseVarDeclaration()");
                     }
                 
             }
@@ -122,7 +146,7 @@ public class CMinusParser implements Parser {
                     Identifier id = parseIdentifier();
                     if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
                         match(Token.TokenType.OPENBRACKET_TOKEN);
-                        Numeric idNum = parseNumeric();
+                        Numeric idNum = parseNumeric(); //Get array data
                         match(Token.TokenType.CLOSEBRACKET_TOKEN);
                         match(Token.TokenType.SEMICOLON_TOKEN);
                         return new VarDeclaration(idNum, id);  
@@ -130,10 +154,13 @@ public class CMinusParser implements Parser {
                         match(Token.TokenType.SEMICOLON_TOKEN);
                         return new VarDeclaration(id);
                     } else {
-                        if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseVarDeclaration()");
+                        if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                           scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                     ": " + scanner.viewNextToken().getData().toString() + " in parseVarDeclaration()");
                         } else {
-                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseVarDeclaration()");
+                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                     " in parseVarDeclaration()");
                         }
                     }
 
@@ -146,10 +173,13 @@ public class CMinusParser implements Parser {
         if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN){
             return new Identifier(scanner.getNextToken().getData().toString());
         } else {
-            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseIdentifier()");
+            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                         ": " + scanner.viewNextToken().getData().toString() + " in parseIdentifier()");
             } else {
-                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseIdentifier()");
+                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                         " in parseIdentifier()");
             }
         }
     }
@@ -159,10 +189,13 @@ public class CMinusParser implements Parser {
         if(scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
             return new Numeric(scanner.getNextToken().getData().toString());
         } else {
-            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseNumeric()");
+            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                         ": " + scanner.viewNextToken().getData().toString() + " in parseNumeric()");
             } else {
-                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseNumeric()");
+                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                         " in parseNumeric()");
             }
         }
     }
@@ -170,14 +203,15 @@ public class CMinusParser implements Parser {
     @Override
     public FunctionDeclaration parseFunctionDeclaration(String s) throws ParseException {
         Identifier id;
+        //Checks if there is not an Identifier already associated with this fun-decl
 	if (s == null){
             id = parseIdentifier();  
         } else {
             id = new Identifier(s);
         }
         match(Token.TokenType.OPENPAREN_TOKEN);
-        ArrayList<Parameter> params = new ArrayList<>();
-        params.add(parseParameter());
+        ArrayList<Parameter> params = new ArrayList<>(); //Get ready for params
+        params.add(parseParameter()); //Add first param to list in case there is only one
         while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN) {
             match(Token.TokenType.COMMA_TOKEN);
             params.add(parseParameter());
@@ -193,27 +227,36 @@ public class CMinusParser implements Parser {
             case INT_TOKEN:
                 match(Token.TokenType.INT_TOKEN);
                 Identifier id = parseIdentifier();
+                //Case for array param
                 if(scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
                     match(Token.TokenType.OPENBRACKET_TOKEN);
                     match(Token.TokenType.CLOSEBRACKET_TOKEN);
                     return new Parameter(id);
-                } else if (scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.CLOSEPAREN_TOKEN){
+                } else if (scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN ||
+                           scanner.viewNextToken().getType() == Token.TokenType.CLOSEPAREN_TOKEN){
                     return new Parameter(id);
                 } else {
-                    if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseParameter()");
+                    if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                       scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                 ": " + scanner.viewNextToken().getData().toString() + " in parseParameter()");
                     } else {
-                        throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseParameter()");
+                        throw new ParseException("Error: Unexpected Token " + 
+                                                 scanner.viewNextToken().getType().toString() + " in parseParameter()");
                     }
                 }
             case VOID_TOKEN:
+                //Case for no params (cannot have empty param list, but VOID token is valid
                 match(Token.TokenType.VOID_TOKEN);
                 return null;
             default:
-                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseParameter()");
+                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseParameter()");
                 } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseParameter()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() +
+                                             " in parseParameter()");
                 }
                 
             
@@ -225,10 +268,12 @@ public class CMinusParser implements Parser {
         match(Token.TokenType.OPENCURLY_TOKEN);
         ArrayList<VarDeclaration> localDecl = new ArrayList<>();
         ArrayList<Statement> stmtList = new ArrayList<>();
+        //Iterate through local decls (they will all start with an int)
         while(scanner.viewNextToken().getType() == Token.TokenType.INT_TOKEN){
             localDecl.add(parseVarDeclaration(null));
         }
         
+        //Iterate through statement list
         while(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || 
               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || 
               scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN ||  
@@ -248,6 +293,7 @@ public class CMinusParser implements Parser {
     public Statement parseStatement() throws ParseException{
         Token.TokenType currentToken = scanner.viewNextToken().getType();
         switch(currentToken){
+            //First set of expression statement
             case OPENPAREN_TOKEN: case NUM_TOKEN: case ID_TOKEN: case SEMICOLON_TOKEN:
                 return parseExpressionStatement();
             case OPENCURLY_TOKEN:
@@ -259,10 +305,13 @@ public class CMinusParser implements Parser {
             case RETURN_TOKEN:
                 return parseReturnStatement();
             default:
-                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseStatement()");
+                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() +
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseStatement()");
                 } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseStatement()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             " in parseStatement()");
                 }
         }
     }
@@ -274,15 +323,19 @@ public class CMinusParser implements Parser {
         switch(currentToken){
             case SEMICOLON_TOKEN:
                 return exp;
+            //First set of expression
             case OPENPAREN_TOKEN: case NUM_TOKEN: case ID_TOKEN:
                 exp = new ExpressionStatement(parseExpression());
                 match(Token.TokenType.SEMICOLON_TOKEN);
                 return exp;
             default:
-                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionStatement()");
+                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionStatement()");
                 } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseExpressionStatement()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             " in parseExpressionStatement()");
                 }
         }
         
@@ -297,6 +350,7 @@ public class CMinusParser implements Parser {
        Statement thenStmt = parseStatement();
        Statement elseStmt = null;
        
+       //Only parse else statement if else token exists
        if(scanner.viewNextToken().getType() == Token.TokenType.ELSE_TOKEN) {
            match(Token.TokenType.ELSE_TOKEN);
            elseStmt = parseStatement();
@@ -323,7 +377,10 @@ public class CMinusParser implements Parser {
        match(Token.TokenType.RETURN_TOKEN);
        Expression expr = null;
        Token.TokenType currentToken = scanner.viewNextToken().getType();
-       if(currentToken == Token.TokenType.OPENPAREN_TOKEN || currentToken == Token.TokenType.NUM_TOKEN || currentToken == Token.TokenType.ID_TOKEN) {
+       //First set of expression
+       if(currentToken == Token.TokenType.OPENPAREN_TOKEN || 
+          currentToken == Token.TokenType.NUM_TOKEN || 
+          currentToken == Token.TokenType.ID_TOKEN) {
             expr = parseExpression();
        }
        match(Token.TokenType.SEMICOLON_TOKEN);
@@ -338,6 +395,8 @@ public class CMinusParser implements Parser {
                match(Token.TokenType.OPENPAREN_TOKEN);
                Expression exp = parseExpression();
                match(Token.TokenType.CLOSEPAREN_TOKEN);
+               //We go to recursive function which takes care of all of 
+               //simple-expression'
                BinaryExpression binExp = new BinaryExpression(exp);
                binExp = parseBinaryExpression(binExp);
                return binExp;
@@ -349,7 +408,11 @@ public class CMinusParser implements Parser {
            case ID_TOKEN:
                Identifier id = parseIdentifier();
                Expression idExp;
-               if(scanner.viewNextToken().getType() != Token.TokenType.SEMICOLON_TOKEN && scanner.viewNextToken().getType() != Token.TokenType.CLOSEBRACKET_TOKEN && scanner.viewNextToken().getType() != Token.TokenType.COMMA_TOKEN && scanner.viewNextToken().getType() != Token.TokenType.CLOSEPAREN_TOKEN){
+               //According to grammar, we go to expression' in this case
+               if(scanner.viewNextToken().getType() != Token.TokenType.SEMICOLON_TOKEN && 
+                  scanner.viewNextToken().getType() != Token.TokenType.CLOSEBRACKET_TOKEN && 
+                  scanner.viewNextToken().getType() != Token.TokenType.COMMA_TOKEN && 
+                  scanner.viewNextToken().getType() != Token.TokenType.CLOSEPAREN_TOKEN){
                     idExp = parseExpressionPrime(id);
                } else {
                    idExp = id;
@@ -357,10 +420,13 @@ public class CMinusParser implements Parser {
                
                return idExp;
            default:
-               if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseExpression()");
+               if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                  scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseExpression()");
                 } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseExpression()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             " in parseExpression()");
                 }
        }
    }
@@ -369,10 +435,12 @@ public class CMinusParser implements Parser {
    public Expression parseExpressionPrime(Identifier id) throws ParseException{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
+           //First case in expression'. If assign token, create an assign expression
            case ASSIGN_TOKEN:
                match(Token.TokenType.ASSIGN_TOKEN);
                Expression exp = parseExpression();
                return new AssignExpression(id, exp);
+           //First set of simple-expression', so we go to recursive fuction for binary expression
            case PLUS_TOKEN: 
            case MINUS_TOKEN: 
            case MULT_TOKEN: 
@@ -386,10 +454,13 @@ public class CMinusParser implements Parser {
                BinaryExpression binExp = new BinaryExpression(id);
                binExp = parseBinaryExpression(binExp);
                return binExp;
+           //Case for function call
            case OPENPAREN_TOKEN:
                match(Token.TokenType.OPENPAREN_TOKEN);
                CallExpression callExp = parseCallExpression(id);
                match(Token.TokenType.CLOSEPAREN_TOKEN);
+               //If semicolon, we have reached end of expression. Otherwise, keep
+               //looking for operators
                if(scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
                    return callExp;
                } else {
@@ -397,19 +468,24 @@ public class CMinusParser implements Parser {
                    bExp = parseBinaryExpression(bExp);
                    return bExp;
                }
-               
+           //Case for expression within array brackets 
            case OPENBRACKET_TOKEN:
                match(Token.TokenType.OPENBRACKET_TOKEN);
                Expression arrExp = parseExpression();
                match(Token.TokenType.CLOSEBRACKET_TOKEN);
                id.setArrayData(arrExp);
+               //In this case we need to continue to expression'', according to
+               //the grammar
                Expression retExp = parseExpressionDoublePrime(id);
                return retExp;
            default:
-               if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionPrime()");
+               if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                  scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionPrime()");
                 } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseExpressionPrime()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             " in parseExpressionPrime()");
                 }
                
                
@@ -421,9 +497,11 @@ public class CMinusParser implements Parser {
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        switch(currentToken){
            case ASSIGN_TOKEN:
+               //We still have the assign expression case here, according to the grammar
                match(Token.TokenType.ASSIGN_TOKEN);
                Expression exp = parseExpression();
                return new AssignExpression(id, exp);
+           //First set of simple-expression'
            case PLUS_TOKEN: 
            case MINUS_TOKEN: 
            case MULT_TOKEN: 
@@ -441,10 +519,13 @@ public class CMinusParser implements Parser {
            case SEMICOLON_TOKEN:
                return id;
            default:
-               if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionDoublePrime()");
+               if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                  scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionDoublePrime()");
                } else {
-                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseExpressionDoublePrime()");
+                    throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                             " in parseExpressionDoublePrime()");
                }
        }
            
@@ -454,6 +535,7 @@ public class CMinusParser implements Parser {
    public BinaryExpression parseBinaryExpression(BinaryExpression id) throws ParseException{
        Token.TokenType currentToken = scanner.viewNextToken().getType();
        BinaryExpression recBinExp = id;
+       //Case for exiting recursion
        if(currentToken == Token.TokenType.MULT_TOKEN || 
           currentToken == Token.TokenType.DIV_TOKEN || 
           currentToken == Token.TokenType.PLUS_TOKEN || 
@@ -464,13 +546,15 @@ public class CMinusParser implements Parser {
           currentToken == Token.TokenType.GTEQ_TOKEN ||
           currentToken == Token.TokenType.EQ_TOKEN ||
           currentToken == Token.TokenType.NOTEQ_TOKEN){
-                Token op = scanner.getNextToken();
+                Token op = scanner.getNextToken(); //Get the operator
                 currentToken = scanner.viewNextToken().getType();
                 switch(currentToken){
                     case OPENPAREN_TOKEN:
                         match(Token.TokenType.OPENPAREN_TOKEN);
                         Expression multExp = parseExpression();
                         match(Token.TokenType.CLOSEPAREN_TOKEN);
+                        //If first item in expression, set lhs to lhs of recBinExp
+                        //not the entire recBinExp object
                         if(recBinExp.getOperator() == null){
                                 Expression tempId = null;
                                 if(recBinExp.getLhs() instanceof Numeric){
@@ -487,7 +571,7 @@ public class CMinusParser implements Parser {
                             recBinExp.setOperator(op);
                             recBinExp.setRhs(multExp);
                         }
-                        return parseBinaryExpression(recBinExp);
+                        return parseBinaryExpression(recBinExp); //Continue recursing
 
                     case ID_TOKEN:
                         Identifier multId = parseIdentifier();
@@ -495,7 +579,7 @@ public class CMinusParser implements Parser {
                            match(Token.TokenType.OPENPAREN_TOKEN);
                            Expression idMultExp = parseExpression();
                            ArrayList<Expression> multArgs = new ArrayList<>();
-                           multArgs.add(idMultExp);
+                           multArgs.add(idMultExp); //Set first arg in case there is only one
                            while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN){
                                match(Token.TokenType.COMMA_TOKEN);
                                multExp = parseExpression();
@@ -620,19 +704,29 @@ public class CMinusParser implements Parser {
        
    }
     
+   
+    
    public CallExpression parseCallExpression(Identifier id) throws ParseException{
         ArrayList<Expression> args = new ArrayList<>();
-        if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN){
+        //Start parsing the list of expressions within the call
+        //If first condition fails and the next token is not a close paren,
+        //an exception is thrown
+        if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || 
+           scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || 
+           scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN){
             args.add(parseExpression());
             while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN){
                 match(Token.TokenType.COMMA_TOKEN);
                 args.add(parseExpression());
             }
         } else if (scanner.viewNextToken().getType() != Token.TokenType.CLOSEPAREN_TOKEN){
-            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                 throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionPrime()");
+            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                 throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                          ": " + scanner.viewNextToken().getData().toString() + " in parseExpressionPrime()");
              } else {
-                 throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseExpressionPrime()");
+                 throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                          " in parseExpressionPrime()");
              }
         }
         
