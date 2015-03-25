@@ -1,4 +1,7 @@
 Program
+    VarDeclaration
+        Identifier
+            a
     FunctionDeclaration
         Identifier
             addThem
@@ -31,16 +34,15 @@ Program
             Identifier
                 s
         CompoundStatement
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                +
-                                    Numeric
-                                        48
-                                    Identifier
-                                        s
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                    +
+                        Numeric
+                            48
+                        Identifier
+                            s
     FunctionDeclaration
         Identifier
             printInt
@@ -68,20 +70,18 @@ Program
                         Numeric
                             10000
                 CompoundStatement
-                    Expression
-                            Identifier
-                                /putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                45
-                    Expression
-                            Identifier
-                                putDigit
-                                Args:
-                                    Expression
-                                            Numeric
-                                                1
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    45
+                    CallExpression
+                        Identifier
+                            putDigit
+                        Expression
+                                Numeric
+                                    1
                     ReturnStatement
                 CompoundStatement
                     IfStatement
@@ -101,12 +101,11 @@ Program
                                             r
                                         Numeric
                                             1000
-                            Expression
-                                    Identifier
-                                        putDigit
-                                        Args:
-                                            Identifier
-                                                t
+                            CallExpression
+                                Identifier
+                                    putDigit
+                                Identifier
+                                    t
                             AssignExpression
                                 Identifier
                                     r
@@ -143,12 +142,11 @@ Program
                                             r
                                         Numeric
                                             100
-                            Expression
-                                    Identifier
-                                        putDigit
-                                        Args:
-                                            Identifier
-                                                t
+                            CallExpression
+                                Identifier
+                                    putDigit
+                                Identifier
+                                    t
                             AssignExpression
                                 Identifier
                                     r
@@ -176,13 +174,12 @@ Program
                                     Numeric
                                         1
                             CompoundStatement
-                                Expression
-                                        Identifier
-                                            putDigit
-                                            Args:
-                                                Expression
-                                                        Numeric
-                                                            0
+                                CallExpression
+                                    Identifier
+                                        putDigit
+                                    Expression
+                                            Numeric
+                                                0
                     IfStatement
                         Expression
                             >=
@@ -200,12 +197,11 @@ Program
                                             r
                                         Numeric
                                             10
-                            Expression
-                                    Identifier
-                                        putDigit
-                                        Args:
-                                            Identifier
-                                                t
+                            CallExpression
+                                Identifier
+                                    putDigit
+                                Identifier
+                                    t
                             AssignExpression
                                 Identifier
                                     r
@@ -227,19 +223,17 @@ Program
                                     Numeric
                                         1
                             CompoundStatement
-                                Expression
-                                        Identifier
-                                            putDigit
-                                            Args:
-                                                Expression
-                                                        Numeric
-                                                            0
-                    Expression
-                            Identifier
-                                putDigit
-                                Args:
+                                CallExpression
                                     Identifier
-                                        r
+                                        putDigit
+                                    Expression
+                                            Numeric
+                                                0
+                    CallExpression
+                        Identifier
+                            putDigit
+                        Identifier
+                            r
     FunctionDeclaration
         Identifier
             main
@@ -348,45 +342,40 @@ Program
             AssignExpression
                 Identifier
                     c
+                CallExpression
+                    Identifier
+                        addThem
+                    Identifier
+                        a
+                    Identifier
+                        b
+            CallExpression
+                Identifier
+                    putchar
                 Expression
+                        Numeric
+                            56
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            61
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                    +
                         Identifier
-                            addThem
-                            Args:
-                                Identifier
-                                    a
-                                Identifier
-                                    b
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        56
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        61
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                +
-                                    Identifier
-                                        c
-                                    Identifier
-                                        g
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        10
+                            c
+                        Identifier
+                            g
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            10
             AssignExpression
                 Identifier
                     i
@@ -401,16 +390,15 @@ Program
                         Numeric
                             10
                 CompoundStatement
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                        +
-                                            Numeric
-                                                48
-                                            Identifier
-                                                i
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                            +
+                                Numeric
+                                    48
+                                Identifier
+                                    i
                     AssignExpression
                         Identifier
                             i
@@ -420,41 +408,36 @@ Program
                                     i
                                 Numeric
                                     1
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        10
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        67
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        83
-            Expression
-                    Identifier
-                        printInt
-                        Args:
-                            Expression
-                                    Numeric
-                                        3510
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        10
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            10
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            67
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            83
+            CallExpression
+                Identifier
+                    printInt
+                Expression
+                        Numeric
+                            3510
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            10
             AssignExpression
                 Identifier
                     b
@@ -557,76 +540,66 @@ Program
                         Numeric
                             10
                 CompoundStatement
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                99
-                    Expression
-                            Identifier
-                                putDigit
-                                Args:
-                                    Expression
-                                            Numeric
-                                                0
-                    Expression
-                            Identifier
-                                putDigit
-                                Args:
-                                    Expression
-                                            Numeric
-                                                0
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                108
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    99
+                    CallExpression
+                        Identifier
+                            putDigit
+                        Expression
+                                Numeric
+                                    0
+                    CallExpression
+                        Identifier
+                            putDigit
+                        Expression
+                                Numeric
+                                    0
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    108
                 CompoundStatement
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                98
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                97
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                100
-                    Expression
-                            Identifier
-                                putchar
-                                Args:
-                                    Expression
-                                            Numeric
-                                                61
-                    Expression
-                            Identifier
-                                printInt
-                                Args:
-                                    Identifier
-                                        i
-            Expression
-                    Identifier
-                        putchar
-                        Args:
-                            Expression
-                                    Numeric
-                                        10
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    98
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    97
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    100
+                    CallExpression
+                        Identifier
+                            putchar
+                        Expression
+                                Numeric
+                                    61
+                    CallExpression
+                        Identifier
+                            printInt
+                        Identifier
+                            i
+            CallExpression
+                Identifier
+                    putchar
+                Expression
+                        Numeric
+                            10
             ReturnStatement
                 Expression
                         Numeric

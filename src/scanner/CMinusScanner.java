@@ -231,6 +231,7 @@ public class CMinusScanner implements Scanner {
                               state = stateType.INCOMMENT;
                           }
                       }
+                      break;
                   case DONE:
                       break;
                   default:
@@ -241,7 +242,7 @@ public class CMinusScanner implements Scanner {
             if(state != stateType.DONE){
                 //Save data to tokenData (will always be saved, but will only
                 //be saved for ID and NUM)
-                if(c != ' ' && c != '\t' && c != '\n'){
+                if(c != ' ' && c != '\t' && c != '\n' && c != '/'){
                     tokenData += String.valueOf(c);
                 }
             }
