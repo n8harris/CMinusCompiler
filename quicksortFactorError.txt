@@ -1,3 +1,7 @@
+/*Example of incorrect expression format (comma after x[pivot])*/
+/*OUTPUT – "Error: Unexpected Token COMMA_TOKEN, looking for CLOSEPAREN_TOKEN"*/
+
+
 void quicksort(int x[],int first,int last){
     int pivot;
     int j;
@@ -10,7 +14,7 @@ void quicksort(int x[],int first,int last){
          j=last;
 
          while(i<j){
-             while(x[i]<=x[pivot]){
+             while(x[i]<=x[pivot], x[i]){
                  i = i + 1;
 			}
              while(x[j]>x[pivot] + x[j]){

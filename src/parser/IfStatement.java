@@ -31,7 +31,9 @@ public class IfStatement extends Statement {
         expr.printExpression(offset + "    ", writer);
         thenStmt.printStatement(offset + "    ", writer);
         if(elseStmt != null){
-            elseStmt.printStatement(offset + "    ", writer);
+            writer.write(offset + "    " + "ElseStatement");
+            writer.newLine();
+            elseStmt.printStatement(offset + "        ", writer);
         }
     }
 

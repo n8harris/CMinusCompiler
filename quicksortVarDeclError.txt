@@ -1,5 +1,9 @@
+/*Example of var-decl with incorrect syntax*/
+/*OUTPUT – "Error: Unexpected Token MULT_TOKEN in parseVarDeclaration()"*/
+
+
 void quicksort(int x[],int first,int last){
-    int pivot;
+    int pivot * pivot;
     int j;
     int temp; 
     int i;
@@ -31,3 +35,5 @@ void quicksort(int x[],int first,int last){
 
     }
 }
+
+

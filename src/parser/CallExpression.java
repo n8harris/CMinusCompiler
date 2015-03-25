@@ -11,11 +11,11 @@ import java.util.ArrayList;
 public class CallExpression extends Expression {
     
     private Identifier id;
-    private ArrayList<Expression> arg;
+    private ArrayList<Expression> args;
     
     public CallExpression(Identifier i, ArrayList<Expression> a){
         id = i;
-        arg = a;
+        args = a;
     }
     //Prints out the contents of BinaryExpression by recursively calling each objects
     //print function, or by printing the data in the case of a terminal.
@@ -24,7 +24,7 @@ public class CallExpression extends Expression {
         writer.write(offset + "CallExpression");
         writer.newLine();
         id.printExpression(offset + "    ", writer);
-        for (Expression expr : arg) {
+        for (Expression expr : args) {
             expr.printExpression(offset + "    ", writer);
         }
     }

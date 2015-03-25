@@ -59,9 +59,8 @@ Program
             AssignExpression
                 Identifier
                     found
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0
             IfStatement
                 Expression
                     >=
@@ -73,167 +72,164 @@ Program
                     CallExpression
                         Identifier
                             putchar
-                        Expression
-                                Numeric
-                                    45
+                        Numeric
+                            45
                     CallExpression
                         Identifier
                             putDigit
-                        Expression
-                                Numeric
-                                    1
+                        Numeric
+                            1
                     ReturnStatement
-                CompoundStatement
-                    IfStatement
-                        Expression
-                            >=
-                                Identifier
-                                    r
-                                Numeric
-                                    1000
-                        CompoundStatement
-                            AssignExpression
-                                Identifier
-                                    t
-                                Expression
-                                    /
-                                        Identifier
-                                            r
-                                        Numeric
-                                            1000
-                            CallExpression
-                                Identifier
-                                    putDigit
-                                Identifier
-                                    t
-                            AssignExpression
-                                Identifier
-                                    r
-                                Expression
-                                    *
-                                        Expression
-                                            -
-                                                Identifier
-                                                    r
-                                                Identifier
-                                                    t
-                                        Numeric
-                                            1000
-                            AssignExpression
-                                Identifier
-                                    found
-                                Expression
-                                        Numeric
-                                            1
-                    IfStatement
-                        Expression
-                            >=
-                                Identifier
-                                    r
-                                Numeric
-                                    100
-                        CompoundStatement
-                            AssignExpression
-                                Identifier
-                                    t
-                                Expression
-                                    /
-                                        Identifier
-                                            r
-                                        Numeric
-                                            100
-                            CallExpression
-                                Identifier
-                                    putDigit
-                                Identifier
-                                    t
-                            AssignExpression
-                                Identifier
-                                    r
-                                Expression
-                                    *
-                                        Expression
-                                            -
-                                                Identifier
-                                                    r
-                                                Identifier
-                                                    t
-                                        Numeric
-                                            100
-                            AssignExpression
-                                Identifier
-                                    found
-                                Expression
-                                        Numeric
-                                            1
+                ElseStatement
+                    CompoundStatement
                         IfStatement
                             Expression
-                                ==
+                                >=
+                                    Identifier
+                                        r
+                                    Numeric
+                                        1000
+                            CompoundStatement
+                                AssignExpression
+                                    Identifier
+                                        t
+                                    Expression
+                                        /
+                                            Identifier
+                                                r
+                                            Numeric
+                                                1000
+                                CallExpression
+                                    Identifier
+                                        putDigit
+                                    Identifier
+                                        t
+                                AssignExpression
+                                    Identifier
+                                        r
+                                    Expression
+                                        -
+                                            Identifier
+                                                r
+                                            Expression
+                                                *
+                                                    Identifier
+                                                        t
+                                                    Numeric
+                                                        1000
+                                AssignExpression
                                     Identifier
                                         found
                                     Numeric
                                         1
+                        IfStatement
+                            Expression
+                                >=
+                                    Identifier
+                                        r
+                                    Numeric
+                                        100
                             CompoundStatement
+                                AssignExpression
+                                    Identifier
+                                        t
+                                    Expression
+                                        /
+                                            Identifier
+                                                r
+                                            Numeric
+                                                100
                                 CallExpression
                                     Identifier
                                         putDigit
+                                    Identifier
+                                        t
+                                AssignExpression
+                                    Identifier
+                                        r
                                     Expression
-                                            Numeric
-                                                0
-                    IfStatement
-                        Expression
-                            >=
-                                Identifier
-                                    r
-                                Numeric
-                                    10
-                        CompoundStatement
-                            AssignExpression
-                                Identifier
-                                    t
-                                Expression
-                                    /
-                                        Identifier
-                                            r
-                                        Numeric
-                                            10
-                            CallExpression
-                                Identifier
-                                    putDigit
-                                Identifier
-                                    t
-                            AssignExpression
-                                Identifier
-                                    r
-                                Expression
-                                    *
-                                        Expression
-                                            -
-                                                Identifier
-                                                    r
-                                                Identifier
-                                                    t
-                                        Numeric
-                                            10
-                        IfStatement
-                            Expression
-                                ==
+                                        -
+                                            Identifier
+                                                r
+                                            Expression
+                                                *
+                                                    Identifier
+                                                        t
+                                                    Numeric
+                                                        100
+                                AssignExpression
                                     Identifier
                                         found
                                     Numeric
                                         1
+                            ElseStatement
+                                IfStatement
+                                    Expression
+                                        ==
+                                            Identifier
+                                                found
+                                            Numeric
+                                                1
+                                    CompoundStatement
+                                        CallExpression
+                                            Identifier
+                                                putDigit
+                                            Numeric
+                                                0
+                        IfStatement
+                            Expression
+                                >=
+                                    Identifier
+                                        r
+                                    Numeric
+                                        10
                             CompoundStatement
+                                AssignExpression
+                                    Identifier
+                                        t
+                                    Expression
+                                        /
+                                            Identifier
+                                                r
+                                            Numeric
+                                                10
                                 CallExpression
                                     Identifier
                                         putDigit
+                                    Identifier
+                                        t
+                                AssignExpression
+                                    Identifier
+                                        r
                                     Expression
+                                        -
+                                            Identifier
+                                                r
+                                            Expression
+                                                *
+                                                    Identifier
+                                                        t
+                                                    Numeric
+                                                        10
+                            ElseStatement
+                                IfStatement
+                                    Expression
+                                        ==
+                                            Identifier
+                                                found
+                                            Numeric
+                                                1
+                                    CompoundStatement
+                                        CallExpression
+                                            Identifier
+                                                putDigit
                                             Numeric
                                                 0
-                    CallExpression
-                        Identifier
-                            putDigit
-                        Identifier
-                            r
+                        CallExpression
+                            Identifier
+                                putDigit
+                            Identifier
+                                r
     FunctionDeclaration
         Identifier
             main
@@ -259,9 +255,8 @@ Program
                 AssignExpression
                     Identifier
                         c
-                    Expression
-                            Numeric
-                                5
+                    Numeric
+                        5
             IfStatement
                 Expression
                     ==
@@ -273,28 +268,25 @@ Program
                     AssignExpression
                         Identifier
                             a
-                        Expression
-                                Numeric
-                                    3
-                CompoundStatement
-                    AssignExpression
-                        Identifier
-                            a
-                        Expression
-                                Numeric
-                                    4
+                        Numeric
+                            3
+                ElseStatement
+                    CompoundStatement
+                        AssignExpression
+                            Identifier
+                                a
+                            Numeric
+                                4
             AssignExpression
                 Identifier
                     g
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0
             AssignExpression
                 Identifier
                     i
-                Expression
-                        Numeric
-                            1
+                Numeric
+                    1
             IterationStatement
                 Expression
                     <=
@@ -352,15 +344,13 @@ Program
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            56
+                Numeric
+                    56
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            61
+                Numeric
+                    61
             CallExpression
                 Identifier
                     putchar
@@ -373,15 +363,13 @@ Program
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            10
+                Numeric
+                    10
             AssignExpression
                 Identifier
                     i
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0
             IterationStatement
                 Expression
                     <
@@ -411,63 +399,53 @@ Program
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            10
+                Numeric
+                    10
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            67
+                Numeric
+                    67
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            83
+                Numeric
+                    83
             CallExpression
                 Identifier
                     printInt
-                Expression
-                        Numeric
-                            3510
+                Numeric
+                    3510
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            10
+                Numeric
+                    10
             AssignExpression
                 Identifier
                     b
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0
             AssignExpression
                 Identifier
                     c
-                Expression
-                        Numeric
-                            1
+                Numeric
+                    1
             AssignExpression
                 Identifier
                     g
-                Expression
-                        Numeric
-                            1
+                Numeric
+                    1
             AssignExpression
                 Identifier
                     h
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0
             AssignExpression
                 Identifier
                     i
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0
             IfStatement
                 Expression
                     ==
@@ -487,51 +465,50 @@ Program
                             AssignExpression
                                 Identifier
                                     i
-                                Expression
-                                        Numeric
-                                            1
-                        IfStatement
-                            Expression
-                                ==
-                                    Identifier
-                                        g
-                                    Numeric
-                                        0
-                            CompoundStatement
-                                AssignExpression
-                                    Identifier
-                                        i
-                                    Expression
-                                            Numeric
-                                                2
+                                Numeric
+                                    1
+                        ElseStatement
                             IfStatement
                                 Expression
                                     ==
                                         Identifier
-                                            h
+                                            g
                                         Numeric
                                             0
                                 CompoundStatement
                                     AssignExpression
                                         Identifier
                                             i
+                                        Numeric
+                                            2
+                                ElseStatement
+                                    IfStatement
                                         Expression
+                                            ==
+                                                Identifier
+                                                    h
+                                                Numeric
+                                                    0
+                                        CompoundStatement
+                                            AssignExpression
+                                                Identifier
+                                                    i
                                                 Numeric
                                                     10
-                                CompoundStatement
-                                    AssignExpression
-                                        Identifier
-                                            i
-                                        Expression
-                                                Numeric
-                                                    3
-                CompoundStatement
-                    AssignExpression
-                        Identifier
-                            i
-                        Expression
-                                Numeric
-                                    0
+                                        ElseStatement
+                                            CompoundStatement
+                                                AssignExpression
+                                                    Identifier
+                                                        i
+                                                    Numeric
+                                                        3
+                ElseStatement
+                    CompoundStatement
+                        AssignExpression
+                            Identifier
+                                i
+                            Numeric
+                                0
             IfStatement
                 Expression
                     ==
@@ -543,64 +520,55 @@ Program
                     CallExpression
                         Identifier
                             putchar
-                        Expression
-                                Numeric
-                                    99
+                        Numeric
+                            99
                     CallExpression
                         Identifier
                             putDigit
-                        Expression
-                                Numeric
-                                    0
+                        Numeric
+                            0
                     CallExpression
                         Identifier
                             putDigit
-                        Expression
-                                Numeric
-                                    0
+                        Numeric
+                            0
                     CallExpression
                         Identifier
                             putchar
-                        Expression
-                                Numeric
-                                    108
-                CompoundStatement
-                    CallExpression
-                        Identifier
-                            putchar
-                        Expression
-                                Numeric
-                                    98
-                    CallExpression
-                        Identifier
-                            putchar
-                        Expression
-                                Numeric
-                                    97
-                    CallExpression
-                        Identifier
-                            putchar
-                        Expression
-                                Numeric
-                                    100
-                    CallExpression
-                        Identifier
-                            putchar
-                        Expression
-                                Numeric
-                                    61
-                    CallExpression
-                        Identifier
-                            printInt
-                        Identifier
-                            i
+                        Numeric
+                            108
+                ElseStatement
+                    CompoundStatement
+                        CallExpression
+                            Identifier
+                                putchar
+                            Numeric
+                                98
+                        CallExpression
+                            Identifier
+                                putchar
+                            Numeric
+                                97
+                        CallExpression
+                            Identifier
+                                putchar
+                            Numeric
+                                100
+                        CallExpression
+                            Identifier
+                                putchar
+                            Numeric
+                                61
+                        CallExpression
+                            Identifier
+                                printInt
+                            Identifier
+                                i
             CallExpression
                 Identifier
                     putchar
-                Expression
-                        Numeric
-                            10
+                Numeric
+                    10
             ReturnStatement
-                Expression
-                        Numeric
-                            0
+                Numeric
+                    0

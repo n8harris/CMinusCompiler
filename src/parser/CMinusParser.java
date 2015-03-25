@@ -222,8 +222,7 @@ public class CMinusParser implements Parser {
     }
     
     public Parameter parseParameter() throws ParseException{
-        Token.TokenType currentToken = scanner.viewNextToken().getType();
-        switch(currentToken){
+        switch(scanner.viewNextToken().getType()){
             case INT_TOKEN:
                 match(Token.TokenType.INT_TOKEN);
                 Identifier id = parseIdentifier();
@@ -291,8 +290,7 @@ public class CMinusParser implements Parser {
     
     @Override
     public Statement parseStatement() throws ParseException{
-        Token.TokenType currentToken = scanner.viewNextToken().getType();
-        switch(currentToken){
+        switch(scanner.viewNextToken().getType()){
             //First set of expression statement
             case OPENPAREN_TOKEN: case NUM_TOKEN: case ID_TOKEN: case SEMICOLON_TOKEN:
                 return parseExpressionStatement();
@@ -319,8 +317,7 @@ public class CMinusParser implements Parser {
     @Override
     public ExpressionStatement parseExpressionStatement() throws ParseException{
         ExpressionStatement exp = null;
-        Token.TokenType currentToken = scanner.viewNextToken().getType();
-        switch(currentToken){
+        switch(scanner.viewNextToken().getType()){
             case SEMICOLON_TOKEN:
                 return exp;
             //First set of expression
@@ -376,11 +373,10 @@ public class CMinusParser implements Parser {
    public ReturnStatement parseReturnStatement() throws ParseException {
        match(Token.TokenType.RETURN_TOKEN);
        Expression expr = null;
-       Token.TokenType currentToken = scanner.viewNextToken().getType();
        //First set of expression
-       if(currentToken == Token.TokenType.OPENPAREN_TOKEN || 
-          currentToken == Token.TokenType.NUM_TOKEN || 
-          currentToken == Token.TokenType.ID_TOKEN) {
+       if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN || 
+          scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN || 
+          scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN) {
             expr = parseExpression();
        }
        match(Token.TokenType.SEMICOLON_TOKEN);
@@ -389,36 +385,23 @@ public class CMinusParser implements Parser {
    
     @Override
    public Expression parseExpression() throws ParseException {
-       Token.TokenType currentToken = scanner.viewNextToken().getType();
-       switch(currentToken){
+       switch(scanner.viewNextToken().getType()){
            case OPENPAREN_TOKEN:
                match(Token.TokenType.OPENPAREN_TOKEN);
                Expression exp = parseExpression();
                match(Token.TokenType.CLOSEPAREN_TOKEN);
                //We go to recursive function which takes care of all of 
                //simple-expression'
-               BinaryExpression binExp = new BinaryExpression(exp);
-               binExp = parseBinaryExpression(binExp);
-               return binExp;
+               
+               return parseSimpleExpression(exp);
            case NUM_TOKEN:
                Numeric num = parseNumeric();
-               BinaryExpression bin = new BinaryExpression(num);
-               bin = parseBinaryExpression(bin);
-               return bin;
+            
+               return parseSimpleExpression(num);
            case ID_TOKEN:
                Identifier id = parseIdentifier();
-               Expression idExp;
-               //According to grammar, we go to expression' in this case
-               if(scanner.viewNextToken().getType() != Token.TokenType.SEMICOLON_TOKEN && 
-                  scanner.viewNextToken().getType() != Token.TokenType.CLOSEBRACKET_TOKEN && 
-                  scanner.viewNextToken().getType() != Token.TokenType.COMMA_TOKEN && 
-                  scanner.viewNextToken().getType() != Token.TokenType.CLOSEPAREN_TOKEN){
-                    idExp = parseExpressionPrime(id);
-               } else {
-                   idExp = id;
-               }
+               return parseExpressionPrime(id);
                
-               return idExp;
            default:
                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
                   scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
@@ -433,8 +416,7 @@ public class CMinusParser implements Parser {
    
     @Override
    public Expression parseExpressionPrime(Identifier id) throws ParseException{
-       Token.TokenType currentToken = scanner.viewNextToken().getType();
-       switch(currentToken){
+       switch(scanner.viewNextToken().getType()){
            //First case in expression'. If assign token, create an assign expression
            case ASSIGN_TOKEN:
                match(Token.TokenType.ASSIGN_TOKEN);
@@ -451,23 +433,13 @@ public class CMinusParser implements Parser {
            case GTEQ_TOKEN:
            case EQ_TOKEN:
            case NOTEQ_TOKEN:
-               BinaryExpression binExp = new BinaryExpression(id);
-               binExp = parseBinaryExpression(binExp);
-               return binExp;
+               return parseSimpleExpression(id);
            //Case for function call
            case OPENPAREN_TOKEN:
                match(Token.TokenType.OPENPAREN_TOKEN);
                CallExpression callExp = parseCallExpression(id);
                match(Token.TokenType.CLOSEPAREN_TOKEN);
-               //If semicolon, we have reached end of expression. Otherwise, keep
-               //looking for operators
-               if(scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN){
-                   return callExp;
-               } else {
-                   BinaryExpression bExp = new BinaryExpression(callExp);
-                   bExp = parseBinaryExpression(bExp);
-                   return bExp;
-               }
+               return parseSimpleExpression(callExp);
            //Case for expression within array brackets 
            case OPENBRACKET_TOKEN:
                match(Token.TokenType.OPENBRACKET_TOKEN);
@@ -478,6 +450,11 @@ public class CMinusParser implements Parser {
                //the grammar
                Expression retExp = parseExpressionDoublePrime(id);
                return retExp;
+           case CLOSEPAREN_TOKEN:
+           case SEMICOLON_TOKEN:
+           case COMMA_TOKEN:
+           case CLOSEBRACKET_TOKEN:
+               return id;
            default:
                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
                   scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
@@ -494,8 +471,7 @@ public class CMinusParser implements Parser {
    
     @Override
    public Expression parseExpressionDoublePrime(Identifier id) throws ParseException{
-       Token.TokenType currentToken = scanner.viewNextToken().getType();
-       switch(currentToken){
+       switch(scanner.viewNextToken().getType()){
            case ASSIGN_TOKEN:
                //We still have the assign expression case here, according to the grammar
                match(Token.TokenType.ASSIGN_TOKEN);
@@ -512,11 +488,11 @@ public class CMinusParser implements Parser {
            case GTEQ_TOKEN:
            case EQ_TOKEN:
            case NOTEQ_TOKEN:
-               BinaryExpression binExp = new BinaryExpression(id);
-               binExp = parseBinaryExpression(binExp);
-               return binExp;
+               return parseSimpleExpression(id);
            case CLOSEPAREN_TOKEN:
            case SEMICOLON_TOKEN:
+           case COMMA_TOKEN:
+           case CLOSEBRACKET_TOKEN:
                return id;
            default:
                if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
@@ -531,181 +507,146 @@ public class CMinusParser implements Parser {
            
    }
    
-    @Override
-   public BinaryExpression parseBinaryExpression(BinaryExpression id) throws ParseException{
-       Token.TokenType currentToken = scanner.viewNextToken().getType();
-       BinaryExpression recBinExp = id;
-       //Case for exiting recursion
-       if(currentToken == Token.TokenType.MULT_TOKEN || 
-          currentToken == Token.TokenType.DIV_TOKEN || 
-          currentToken == Token.TokenType.PLUS_TOKEN || 
-          currentToken == Token.TokenType.MINUS_TOKEN || 
-          currentToken == Token.TokenType.LT_TOKEN ||
-          currentToken == Token.TokenType.GT_TOKEN ||
-          currentToken == Token.TokenType.LTEQ_TOKEN ||
-          currentToken == Token.TokenType.GTEQ_TOKEN ||
-          currentToken == Token.TokenType.EQ_TOKEN ||
-          currentToken == Token.TokenType.NOTEQ_TOKEN){
-                Token op = scanner.getNextToken(); //Get the operator
-                currentToken = scanner.viewNextToken().getType();
-                switch(currentToken){
+   public Expression parseSimpleExpression(Expression exp) throws ParseException{
+        Expression lhs = parseAdditiveExpression(exp);
+
+        if (scanner.viewNextToken().getType() == Token.TokenType.LT_TOKEN ||
+            scanner.viewNextToken().getType() == Token.TokenType.GT_TOKEN ||
+            scanner.viewNextToken().getType() == Token.TokenType.LTEQ_TOKEN ||
+            scanner.viewNextToken().getType() == Token.TokenType.GTEQ_TOKEN ||
+            scanner.viewNextToken().getType() == Token.TokenType.EQ_TOKEN ||
+            scanner.viewNextToken().getType() == Token.TokenType.NOTEQ_TOKEN) {
+                Token op = scanner.getNextToken();
+                Expression rhs = parseAdditiveExpression(null);
+                    // make lhs the result, so set up for next iter
+                lhs = new BinaryExpression (lhs, rhs, op);               
+        }
+
+        return lhs;
+
+   }
+   
+   public Expression parseAdditiveExpression(Expression exp) throws ParseException{
+       Expression lhs = parseTerm(exp);
+
+        while (scanner.viewNextToken().getType() == Token.TokenType.PLUS_TOKEN || 
+               scanner.viewNextToken().getType() == Token.TokenType.MINUS_TOKEN) {
+            Token op = scanner.getNextToken();
+            Expression rhs = parseTerm(null);
+            // make lhs the result, so set up for next iter
+            lhs = new BinaryExpression (lhs, rhs, op);               
+        }
+
+        return lhs;
+
+   }
+   
+   public Expression parseTerm(Expression exp) throws ParseException{
+       Expression lhs;
+       //If null was passed, we make lhs the result of parseFactor. If not, we assign lhs the parameter
+       if(exp == null){
+            lhs = parseFactor();
+
+            while (scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN) {
+                Token op = scanner.getNextToken();
+                Expression rhs = parseFactor();
+                // make lhs the result, so set up for next iter
+                lhs = new BinaryExpression (lhs, rhs, op);               
+            }
+
+            return lhs;
+           
+           
+       } else {
+            lhs = exp;
+
+            while (scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
+                   scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN) {
+                Token op = scanner.getNextToken();
+                Expression rhs = parseFactor();
+                // make lhs the result, so set up for next iter
+                lhs = new BinaryExpression (lhs, rhs, op);               
+            }
+
+            return lhs;
+           
+       }
+   }
+   
+   public Expression parseFactor() throws ParseException{
+                //Check first set of factor
+                switch(scanner.viewNextToken().getType()){
                     case OPENPAREN_TOKEN:
+                        //Expression within parentheses case
                         match(Token.TokenType.OPENPAREN_TOKEN);
                         Expression multExp = parseExpression();
                         match(Token.TokenType.CLOSEPAREN_TOKEN);
-                        //If first item in expression, set lhs to lhs of recBinExp
-                        //not the entire recBinExp object
-                        if(recBinExp.getOperator() == null){
-                                Expression tempId = null;
-                                if(recBinExp.getLhs() instanceof Numeric){
-                                    tempId = (Numeric)recBinExp.getLhs();
-                                } else {
-                                    tempId = (Identifier)recBinExp.getLhs();
-                                }
-                                recBinExp.setLhs(tempId);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multExp);
-                        } else {
-                            BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
-                            recBinExp.setLhs(tempBinExp);
-                            recBinExp.setOperator(op);
-                            recBinExp.setRhs(multExp);
-                        }
-                        return parseBinaryExpression(recBinExp); //Continue recursing
+                        return multExp;
 
                     case ID_TOKEN:
+                        //Var-call or array case
                         Identifier multId = parseIdentifier();
                         if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN){
                            match(Token.TokenType.OPENPAREN_TOKEN);
-                           Expression idMultExp = parseExpression();
-                           ArrayList<Expression> multArgs = new ArrayList<>();
-                           multArgs.add(idMultExp); //Set first arg in case there is only one
-                           while(scanner.viewNextToken().getType() == Token.TokenType.COMMA_TOKEN){
-                               match(Token.TokenType.COMMA_TOKEN);
-                               multExp = parseExpression();
-                               multArgs.add(multExp);
-                           }
-                           multId.setArgs(multArgs);
+                           CallExpression idCallExp = parseCallExpression(multId);
                            match(Token.TokenType.CLOSEPAREN_TOKEN);
-                           if(recBinExp.getOperator() == null){
-                                Expression tempId = null;
-                                if(recBinExp.getLhs() instanceof Numeric){
-                                    tempId = (Numeric)recBinExp.getLhs();
-                                } else {
-                                    tempId = (Identifier)recBinExp.getLhs();
-                                }
-                                recBinExp.setLhs(tempId);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multId);
-                            } else {
-                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
-                                recBinExp.setLhs(tempBinExp);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multId);
-                            }
-                           return parseBinaryExpression(recBinExp);
+
+                           return idCallExp;
                         } else if (scanner.viewNextToken().getType() == Token.TokenType.OPENBRACKET_TOKEN){
                             match(Token.TokenType.OPENBRACKET_TOKEN);
                             Expression bracketExpression = parseExpression();
                             match(Token.TokenType.CLOSEBRACKET_TOKEN);
                             multId.setArrayData(bracketExpression);
-                            if(recBinExp.getOperator() == null){
-                                Expression tempId = null;
-                                if(recBinExp.getLhs() instanceof Numeric){
-                                    tempId = (Numeric)recBinExp.getLhs();
-                                } else {
-                                    tempId = (Identifier)recBinExp.getLhs();
-                                }
-                                recBinExp.setLhs(tempId);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multId);
+
+                            return multId;
+                        } else if (scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
+                                   scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN || 
+                                   scanner.viewNextToken().getType() == Token.TokenType.PLUS_TOKEN || 
+                                   scanner.viewNextToken().getType() == Token.TokenType.MINUS_TOKEN || 
+                                   scanner.viewNextToken().getType() == Token.TokenType.LT_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.GT_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.LTEQ_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.GTEQ_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.EQ_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.NOTEQ_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.CLOSEPAREN_TOKEN ||
+                                   scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN) {
+                            //Simply just the ID (not call or array)
+                            return multId;
+                        } else {
+                            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                               scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                         ": " + scanner.viewNextToken().getData().toString() + " in parseFactor()");
                             } else {
-                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
-                                recBinExp.setLhs(tempBinExp);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multId);
-                            }
-                            return parseBinaryExpression(recBinExp);
-                        } else if(scanner.viewNextToken().getType() == Token.TokenType.CLOSEPAREN_TOKEN || 
-                                  scanner.viewNextToken().getType() == Token.TokenType.SEMICOLON_TOKEN ||
-                                  scanner.viewNextToken().getType() == Token.TokenType.MULT_TOKEN || 
-                                  scanner.viewNextToken().getType() == Token.TokenType.DIV_TOKEN || 
-                                  scanner.viewNextToken().getType() == Token.TokenType.PLUS_TOKEN || 
-                                  scanner.viewNextToken().getType() == Token.TokenType.MINUS_TOKEN || 
-                                  scanner.viewNextToken().getType() == Token.TokenType.LT_TOKEN ||
-                                  scanner.viewNextToken().getType() == Token.TokenType.GT_TOKEN ||
-                                  scanner.viewNextToken().getType() == Token.TokenType.LTEQ_TOKEN ||
-                                  scanner.viewNextToken().getType() == Token.TokenType.GTEQ_TOKEN ||
-                                  scanner.viewNextToken().getType() == Token.TokenType.EQ_TOKEN ||
-                                  scanner.viewNextToken().getType() == Token.TokenType.NOTEQ_TOKEN){
-                            if(recBinExp.getOperator() == null){
-                                Expression tempId = null;
-                                if(recBinExp.getLhs() instanceof Numeric){
-                                    tempId = (Numeric)recBinExp.getLhs();
-                                } else {
-                                    tempId = (Identifier)recBinExp.getLhs();
-                                }
-                                recBinExp.setLhs(tempId);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multId);
-                            } else {
-                                BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
-                                recBinExp.setLhs(tempBinExp);
-                                recBinExp.setOperator(op);
-                                recBinExp.setRhs(multId);
-                            }
-                            
-                            return parseBinaryExpression(recBinExp);
-                        }
-                        else {
-                            if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseBinaryExpression()");
-                            } else {
-                                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseBinaryExpression()");
+                                throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                         " in parseFactor()");
                             }
                         }
 
                     case NUM_TOKEN:
+                        //Num case
                         Numeric factorNum = parseNumeric();
-                        if(recBinExp.getOperator() == null){
-                            Expression tempId = null;
-                            if(recBinExp.getLhs() instanceof Numeric){
-                                tempId = (Numeric)recBinExp.getLhs();
-                            } else {
-                                tempId = (Identifier)recBinExp.getLhs();
-                            }
-                            recBinExp.setLhs(tempId);
-                            recBinExp.setOperator(op);
-                            recBinExp.setRhs(factorNum);
-                        } else {
-                            BinaryExpression tempBinExp = new BinaryExpression(recBinExp);
-                            recBinExp.setLhs(tempBinExp);
-                            recBinExp.setOperator(op);
-                            recBinExp.setRhs(factorNum);
-                        }
-                        return parseBinaryExpression(recBinExp);
+                        return factorNum;
 
                     default:
-                        if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + ": " + scanner.viewNextToken().getData().toString() + " in parseBinaryExpression()");
+                        if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
+                           scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
+                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                     ": " + scanner.viewNextToken().getData().toString() + " in parseFactor()");
                         } else {
-                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + " in parseBinaryExpression()");
+                            throw new ParseException("Error: Unexpected Token " + scanner.viewNextToken().getType().toString() + 
+                                                     " in parseFactor()");
                         }
 
 
 
 
                 }
-
-       } else {
-            return recBinExp;
-       }
-       
-       
    }
     
-   
-    
+
    public CallExpression parseCallExpression(Identifier id) throws ParseException{
         ArrayList<Expression> args = new ArrayList<>();
         //Start parsing the list of expressions within the call
