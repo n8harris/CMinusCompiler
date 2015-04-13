@@ -9,8 +9,23 @@ import java.io.IOException;
  */
 public abstract class Declaration {    
 
-//Sets up a prototype for the print functions in classes that extend this one.
-public void printDeclaration(String offset, BufferedWriter writer) throws IOException{
-}
+    private int regNum;
+    //Sets up a prototype for the print functions in classes that extend this one.
+    public void printDeclaration(String offset, BufferedWriter writer) throws IOException{
+    }
+
+    /**
+     * @return the regNum
+     */
+    public int getRegNum() {
+        return regNum;
+    }
+
+    /**
+     * @param regNum the regNum to set
+     */
+    public void setRegNum(int regNum) {
+        this.regNum = regNum;
+    }
 
 }
