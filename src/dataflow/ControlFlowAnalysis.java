@@ -31,11 +31,11 @@ public class ControlFlowAnalysis {
           // grab the following BB as tgt
         for (Operation currOper = currBlock.getFirstOper(); currOper != null;
              currOper = currOper.getNextOper() ) {
-          if ( (currOper.getType() == Operation.OPER_JMP) ||
+          if ( (currOper.getType() == Operation.OperationType.JMP) ||
                (currOper.isBranchOper()) ) {
             int tgtNum;
             BasicBlock tgt;
-            if ( (currOper.getType() == Operation.OPER_JMP) ||
+            if ( (currOper.getType() == Operation.OperationType.JMP) ||
                  (currOper.isX86BranchOper()) ) {
               tgtNum = ( (Integer) currOper.getSrcOperand(0).getValue()).intValue();
               tgt = BasicBlock.getBlockFromNum(func,tgtNum);
@@ -48,8 +48,8 @@ public class ControlFlowAnalysis {
           tgt.addInEdge(currBlock);
           }
           if (currOper == currBlock.getLastOper()) {
-            if ( (currOper.getType() != Operation.OPER_JMP) &&
-                 (currOper.getType() != Operation.OPER_RETURN) ) {
+            if ( (currOper.getType() != Operation.OperationType.JMP) &&
+                 (currOper.getType() != Operation.OperationType.RETURN) ) {
               BasicBlock next = currBlock.getNextBlock();
               if (next != null) {
                 currBlock.addOutEdge(next);

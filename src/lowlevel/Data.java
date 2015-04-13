@@ -1,6 +1,6 @@
 package lowlevel;
 
-import java.io.*;
+import java.io.PrintWriter;
 
 /**
  * This class provides the low-level abstraction for global variables.
@@ -17,54 +17,61 @@ import java.io.*;
  * Functions.
  */
 
-public class Data extends CodeItem {
-    // constants to define the data types available
+public class Data
+    extends CodeItem {
+// constants to define the data types available
   public static final int TYPE_VOID = 0;
   public static final int TYPE_INT = 1;
 
-    // instance variables
+  // instance variables
   int dataType;
   String name;
   boolean isArray;
   int arraySize;
 
-    // constructors
+  // constructors
   public Data() {
-    this (TYPE_VOID,null,false, 0);
+    this(TYPE_VOID, null, false, 0);
   }
-    /**
-     * Used primarily for non-array parameters
-     * @param type is the type of the parameter (e.g., Int, Void) as defined in Data class
-     * @param newName is the name of the parameter
-     */
+
+  /**
+   * Used primarily for non-array parameters
+   * @param type is the type of the parameter (e.g., Int, Void) as defined in Data class
+   * @param newName is the name of the parameter
+   */
   public Data(int type, String newName) {
-    this (type, newName, false, 0);
+    this(type, newName, false, 0);
   }
-    /**
-     * Used primarily for array parameters
-     * @param type is the type of the parameter (e.g., Int, Void) as defined in Data class
-     * @param newName is the name of the parameter
-     * @param array is whether or not the parameter is an array variable
-     * @param size is the size of the array
-     */
-  public Data (int type, String newName, boolean array, int size) {
+
+  /**
+   * Used primarily for array parameters
+   * @param type is the type of the parameter (e.g., Int, Void) as defined in Data class
+   * @param newName is the name of the parameter
+   * @param array is whether or not the parameter is an array variable
+   * @param size is the size of the array
+   */
+  public Data(int type, String newName, boolean array, int size) {
     dataType = type;
     name = newName;
     isArray = array;
     arraySize = size;
   }
-/***************************************************************************/
-    // accessor methods
-  public int getType () {
+
+  /***************************************************************************/
+  // accessor methods
+  public int getType() {
     return dataType;
   }
-  public void setType (int newType) {
+
+  public void setType(int newType) {
     dataType = newType;
   }
-  public String getName () {
+
+  public String getName() {
     return name;
   }
-  public void setname (String newName) {
+
+  public void setname(String newName) {
     name = newName;
   }
 
@@ -75,17 +82,38 @@ public class Data extends CodeItem {
     return "int";
   }
 
-/***************************************************************************/
-    // support methods
+  public int getArraySize() {
+    return arraySize;
+  }
+
+  public boolean getIsArray() {
+    return isArray;
+  }
+
+  /***************************************************************************/
+  // support methods
   public void printLLCode(PrintWriter outFile) {
     if (outFile == null) {
-      System.out.println("(DATA  " + getName() + ")");
+      System.out.print("(DATA  " + getName());
+      if (isArray) {
+        System.out.println(" [" + arraySize + "] )");
+      }
+      else {
+        System.out.println(" )");
+      }
     }
     else {
-      outFile.println("(DATA  " + getName() + ")");
+      outFile.print("(DATA  " + getName());
+      if (isArray) {
+        outFile.println(" [" + arraySize + "])");
+      }
+      else {
+        outFile.println(")");
+      }
+
     }
-      // CodeItems are in a linked list.  This ensures next CodeItem (either
-      // Function or Data) is printed
+    // CodeItems are in a linked list.  This ensures next CodeItem (either
+    // Function or Data) is printed
     if (this.getNextItem() != null) {
       this.getNextItem().printLLCode(outFile);
     }

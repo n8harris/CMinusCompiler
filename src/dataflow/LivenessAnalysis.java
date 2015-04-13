@@ -88,7 +88,7 @@ public class LivenessAnalysis {
         for (int i=0; i < Operation.MAX_SRC_OPERANDS; i++) {
           Operand currOperand = currOper.getSrcOperand(i);
           if ( (currOperand != null) &&
-               (currOperand.getType() == Operand.OPERAND_REG) ) {
+               (currOperand.getType() == Operand.OperandType.REGISTER) ) {
             int regNum = ( (Integer) currOperand.getValue()).intValue();
             if (!defsSoFar.contains(regNum)) {
               uses.add(regNum);
@@ -99,7 +99,7 @@ public class LivenessAnalysis {
         for (int i=0; i < Operation.MAX_DEST_OPERANDS; i++) {
           Operand currOperand = currOper.getDestOperand(i);
           if ( (currOperand != null) &&
-               (currOperand.getType() == Operand.OPERAND_REG) ) {
+               (currOperand.getType() == Operand.OperandType.REGISTER) ) {
             int regNum = ( (Integer) currOperand.getValue()).intValue();
             if (!usesSoFar.contains(regNum)) {
               defs.add(regNum);
@@ -227,7 +227,7 @@ public class LivenessAnalysis {
         for (int i=0; i < Operation.MAX_SRC_OPERANDS; i++) {
           Operand currOperand = currOper.getSrcOperand(i);
           if ( (currOperand != null) &&
-               (currOperand.getType() == Operand.OPERAND_REG) ) {
+               (currOperand.getType() == Operand.OperandType.REGISTER) ) {
             int regNum = ( (Integer) currOperand.getValue()).intValue();
             unusedDefsSoFar.remove(regNum);
           }
@@ -235,7 +235,7 @@ public class LivenessAnalysis {
         for (int i=0; i < Operation.MAX_DEST_OPERANDS; i++) {
           Operand currOperand = currOper.getDestOperand(i);
           if ( (currOperand != null) &&
-               (currOperand.getType() == Operand.OPERAND_REG) ) {
+               (currOperand.getType() == Operand.OperandType.REGISTER) ) {
             int regNum = ( (Integer) currOperand.getValue()).intValue();
             unusedDefsSoFar.add(regNum);
           }
@@ -275,7 +275,7 @@ public class LivenessAnalysis {
         for (int i=0; i < Operation.MAX_DEST_OPERANDS; i++) {
           Operand currOperand = currOper.getDestOperand(i);
           if ( (currOperand != null) &&
-               (currOperand.getType() == Operand.OPERAND_REG) ) {
+               (currOperand.getType() == Operand.OperandType.REGISTER) ) {
             int regNum = ( (Integer) currOperand.getValue()).intValue();
             currentLiveness.remove(regNum);
           }
@@ -286,7 +286,7 @@ public class LivenessAnalysis {
         for (int i=0; i < Operation.MAX_SRC_OPERANDS; i++) {
           Operand currOperand = currOper.getSrcOperand(i);
           if ( (currOperand != null) &&
-               (currOperand.getType() == Operand.OPERAND_REG) ) {
+               (currOperand.getType() == Operand.OperandType.REGISTER) ) {
             int regNum = ( (Integer) currOperand.getValue()).intValue();
             currentLiveness.add(regNum);
           }

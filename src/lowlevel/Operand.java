@@ -18,43 +18,60 @@ import java.io.*;
  * Object
  */
 
-public class Operand {
 
+
+public class Operand {
+    /**
+     * OperandType specifies the different types of operands
+     * UNKNOWN shouldn't be used
+     * INTEGER is for integer literals
+     *    - uses a Integer value
+     * REGISTER is for virtual register operands
+     *    - uses a Integer value, representing register number
+     * MACRO is for special purpose registers, such as architectural regs
+     *    - uses a String value, which is name of register
+     * BLOCK is for destinations of a JMP or BR
+     *    - uses a Integer value, representing block number
+     * STRING is for functions names (in JSRs) or global variable names
+     *    - uses a String value, which is name of function or variable
+     */
+  public enum OperandType {UNKNOWN, INTEGER, REGISTER, MACRO, BLOCK, STRING};
+
+    // these are the old pre 1.5 constants
     // constants to define the different types of operands
-  public static final int OPERAND_UNKNOWN = 0;
+//  public static final int OPERAND_UNKNOWN = 0;
     // an integer literal
-  public static final int OPERAND_INT = 1;
+//  public static final int OPERAND_INT = 1;
     // a register (assumed for now to be integer reg)
-  public static final int OPERAND_REG = 2;
+//  public static final int OPERAND_REG = 2;
     // a special purpose register, with a specific name
-  public static final int OPERAND_MACRO = 3;
+//  public static final int OPERAND_MACRO = 3;
     // an operand for a BasicBlock, where Operand is tgt of a JMP/BR
-  public static final int OPERAND_BLOCK = 4;
+//  public static final int OPERAND_BLOCK = 4;
     // String operands are useful for function names or string constants
-  public static final int OPERAND_STRING = 5;
+// public static final int OPERAND_STRING = 5;
 /***************************************************************************/
   // instance variables
     // the operand type, as specified in consts above
-  int type;
+  OperandType type;
     // contains an int for INT, REG, & BLOCK.  Contains a String for MACRO and
     // STRING
   Object value;
 /***************************************************************************/
   // constructors
-  public Operand() {
-    this (OPERAND_UNKNOWN, null);
-  }
     /**
      * @param newType specifies the type of the Operand
      */
-  public Operand (int newType) {
+  public Operand (OperandType newType) {
     this (newType, null);
   }
     /**
+     * Creates a new Operand; this will likely be the most common form of the
+     * constructor used by the code generator.
      * @param newType specifies the type of the Operand
      * @param newValue specifies the value of the Operand
      */
-  public Operand (int newType, Object newValue) {
+  public Operand (OperandType newType, Object newValue) {
     type = newType;
     value = newValue;
   }
@@ -69,10 +86,10 @@ public class Operand {
 
 /***************************************************************************/
   // accessor methods
-  public int getType () {
+  public OperandType getType () {
     return type;
   }
-  public void setType (int newType) {
+  public void setType (OperandType newType) {
     type = newType;
   }
   public Object getValue() {
@@ -85,19 +102,19 @@ public class Operand {
   // support methods
     // converts type to a string for printing
   private String printType () {
-    if (type == OPERAND_INT) {
+    if (type == OperandType.INTEGER) {
       return ("i");
     }
-    else if (type == OPERAND_REG) {
+    else if (type == OperandType.REGISTER) {
       return ("r");
     }
-    else if (type == OPERAND_MACRO) {
+    else if (type == OperandType.MACRO) {
       return ("m");
     }
-    else if (type == OPERAND_BLOCK) {
+    else if (type == OperandType.BLOCK) {
       return ("bb");
     }
-    else if (type == OPERAND_STRING) {
+    else if (type == OperandType.STRING) {
       return ("s");
     }
     else {

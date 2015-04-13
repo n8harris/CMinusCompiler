@@ -23,13 +23,18 @@ public class X86AssemblyGenerator {
   public void generateAssembly() {
 
     for (CodeItem currItem = firstItem; currItem != null;
-                                        currItem = currItem.getNextItem()) {
+         currItem = currItem.getNextItem()) {
       if (currItem instanceof Data) {
         if (state != DATA) {
           outFile.println(".data");
           state = DATA;
         }
-        outFile.println(".comm\t" + ((Data) currItem).getName() + ",4,4");
+        int size = 4;
+        if ( ( (Data) currItem).getIsArray()) {
+          size = 4 * ( (Data) currItem).getArraySize();
+        }
+        outFile.println(".comm\t" + ( (Data) currItem).getName() + "," + size +
+                        ",4");
         outFile.println();
       }
       else {
@@ -51,181 +56,265 @@ public class X86AssemblyGenerator {
     outFile.println(func.getName() + ":");
 
     for (BasicBlock currBlock = func.getFirstBlock(); currBlock != null;
-          currBlock = currBlock.getNextBlock()) {
+         currBlock = currBlock.getNextBlock()) {
       if (currBlock.getBlockNum() != 0) {
-        outFile.println(func.getName() + "_bb"+currBlock.getBlockNum()+":");
+        outFile.println(func.getName() + "_bb" + currBlock.getBlockNum() + ":");
       }
       for (Operation currOper = currBlock.getFirstOper(); currOper != null;
-          currOper = currOper.getNextOper()) {
+           currOper = currOper.getNextOper()) {
         switch (currOper.getType()) {
 
-          case Operation.OPER_ADD_I:
-          case Operation.OPER_SUB_I:
+          case ADD_I:
+          case SUB_I:
 
-          case Operation.X86_OPER_MUL_I:
-          case Operation.X86_OPER_DIV_I:
+          case X86_MUL_I:
+          case X86_DIV_I:
             assembleArithmetic(currOper);
             break;
 
-          case Operation.OPER_RETURN:
+          case RETURN:
             outFile.println("\tret");
             break;
 
-          case Operation.OPER_JMP:
-            int tgt = ((Integer) currOper.getSrcOperand(0).getValue()).intValue();
+          case JMP:
+            int tgt = ( (Integer) currOper.getSrcOperand(0).getValue()).
+                intValue();
             outFile.println("\tjmp\t" + func.getName() + "_bb" + tgt);
             break;
 
-          case Operation.OPER_PASS:
+          case PASS:
             outFile.print("\tpushl\t");
             Operand src = currOper.getSrcOperand(0);
-            if (src.getType() == Operand.OPERAND_REG) {
-              outFile.println("%"+((String)src.getValue()));
+            if (src.getType() == Operand.OperandType.REGISTER) {
+              outFile.println("%" + ( (String) src.getValue()));
             }
             else {
-              outFile.println("$"+((Integer) src.getValue()).intValue());
+              outFile.println("$" + ( (Integer) src.getValue()).intValue());
             }
             break;
 
-          case Operation.OPER_CALL:
-            outFile.println("\tcall\t"+
-                    ((String)currOper.getSrcOperand(0).getValue()));
+          case CALL:
+            outFile.println("\tcall\t" +
+                            ( (String) currOper.getSrcOperand(0).getValue()));
             break;
 
-          case Operation.OPER_LOAD_I:
-              // movl  (%ebx), %eax   or   movl   a, %eax  or movl 4(%eax), %ebx
+          case LOAD_I:
+
+            // movl  (%ebx), %eax   or   movl   a, %eax  or movl 4(%eax), %ebx
             outFile.print("\tmovl\t");
+            Operand src0 = currOper.getSrcOperand(0);
             Operand src1 = currOper.getSrcOperand(1);
-            if (src1 != null) {
-              if (src1.getType() == Operand.OPERAND_INT) {
-                outFile.print(((Integer)src1.getValue()).intValue());
+
+            // only used for stack loads (local arrays)
+            Operand src2 = currOper.getSrcOperand(2);
+
+            if (src0.getType() == Operand.OperandType.STRING) {
+              outFile.print( ( (String) currOper.getSrcOperand(0).getValue()));
+              if (src1 != null) {
+                if (src1.getType() == Operand.OperandType.INTEGER) {
+                  if ( ( (Integer) src1.getValue()).intValue() != 0) {
+                    outFile.print("+" + ( (Integer) src1.getValue()).intValue());
+                  }
+                }
+                else if (src1.getType() == Operand.OperandType.MACRO) {
+                  outFile.print("(%" + src1.getValue() + ")");
+                }
+                else {
+                  throw new X86CodegenException("assembleLoad: unexpected src1");
+                }
+              }
+            }
+            else if (src0.getType() == Operand.OperandType.MACRO) {
+              if (src1 != null) {
+                if (src1.getType() == Operand.OperandType.INTEGER) {
+                  if ( ( (Integer) src1.getValue()).intValue() != 0) {
+                    outFile.print( ( (Integer) src1.getValue()).intValue());
+                  }
+                  outFile.print("(%" +
+                                ( (String) currOper.getSrcOperand(0).getValue()));
+                  if (src2 != null) {
+                    if (src2.getType() == Operand.OperandType.MACRO) {
+                      outFile.print(",%" + currOper.getSrcOperand(2).getValue());
+                    }
+                    else {
+                      throw new X86CodegenException(
+                          "assembleLoad: unexpected src2");
+                    }
+                  }
+                  outFile.print(")");
+
+                }
+                else if (src1.getType() == Operand.OperandType.MACRO) {
+                  outFile.print("(%" +
+                                ( (String) currOper.getSrcOperand(0).getValue()));
+                  outFile.print(",%" + currOper.getSrcOperand(2).getValue());
+                  outFile.print(")");
+                }
+                else {
+                  throw new X86CodegenException("assembleLoad: unexpected src1");
+                }
               }
               else {
-                throw new X86CodegenException("assembleLoad: unexpected src1");
+                outFile.print("(%" +
+                              ( (String) currOper.getSrcOperand(0).getValue()) +
+                              ")");
               }
             }
-            Operand src0 = currOper.getSrcOperand(0);
-            if (src0.getType() == Operand.OPERAND_STRING) {
-              outFile.print(((String)currOper.getSrcOperand(0).getValue()));
-            }
             else {
-              outFile.print("(%" +
-                  ((String)currOper.getSrcOperand(0).getValue())+")");
+              throw new X86CodegenException("assembleLoad: unexpected src0");
             }
             outFile.println(", %" +
-                  ((String)currOper.getDestOperand(0).getValue()));
+                            ( (String) currOper.getDestOperand(0).getValue()));
             break;
 
-          case Operation.OPER_STORE_I:
-              // movl   %ebx, (%eax)  or  movl $2, (%eax)  or movl %eax, a
+          case STORE_I:
+
+            // movl   %ebx, (%eax)  or  movl $2, (%eax)  or movl %eax, a
+            // or movl %ebx, 8(%eax)   or movl %ebx, 8(a)
             outFile.print("\tmovl\t");
             src0 = currOper.getSrcOperand(0);
-            if (src0.getType() == Operand.OPERAND_INT) {
-              outFile.print("$" + ((Integer)src0.getValue()).intValue());
+            if (src0.getType() == Operand.OperandType.INTEGER) {
+              outFile.print("$" + ( (Integer) src0.getValue()).intValue() +
+                            ", ");
             }
             else {
-              outFile.print("%" + ((String)src0.getValue()));
-            }
-            Operand src2 = currOper.getSrcOperand(2);
-            if (src2 != null) {
-              if (src2.getType() == Operand.OPERAND_INT) {
-                outFile.print(((Integer)src2.getValue()).intValue());
-              }
-              else {
-                throw new X86CodegenException("assembleStore: unexpected src2");
-              }
+              outFile.print("%" + ( (String) src0.getValue()) + ", ");
             }
             src1 = currOper.getSrcOperand(1);
-            if (src1.getType() == Operand.OPERAND_MACRO) {
-              outFile.println(", (%" +
-                    ((String)src1.getValue()) + ")");
+            src2 = currOper.getSrcOperand(2);
+            Operand src3 = currOper.getSrcOperand(3);
+
+            if (src1.getType() == Operand.OperandType.MACRO) {
+
+              if (src2 != null) {
+                if (src2.getType() == Operand.OperandType.INTEGER) {
+                  if ( ( (Integer) src2.getValue()).intValue() != 0) {
+                    outFile.print( ( (Integer) src2.getValue()).intValue());
+                  }
+                  outFile.print("(%" +
+                                  ( (String) src1.getValue()));
+                  if (src3 != null) {
+                    if (src3.getType() == Operand.OperandType.MACRO) {
+                      outFile.print(",%" + currOper.getSrcOperand(3).getValue());
+                    }
+                    else {
+                      throw new X86CodegenException(
+                          "assembleStore: unexpected src3");
+                    }
+                  }
+                  outFile.println(")");
+                }
+                else {
+                  throw new X86CodegenException(
+                      "assembleStore: unexpected src2");
+                }
+              }
             }
-              // else is global
+            // else is global
             else {
-              outFile.println(", " +
-                    ((String)src1.getValue()));
+              outFile.print( ( (String) src1.getValue()));
+              if (src2 != null) {
+                if (src2.getType() == Operand.OperandType.INTEGER) {
+                  if ( ( (Integer) src2.getValue()).intValue() != 0) {
+                    outFile.println("+" + ( (Integer) src2.getValue()).intValue());
+                  }
+                  else {
+                    outFile.println();
+                  }
+                }
+                else if (src2.getType() == Operand.OperandType.MACRO) {
+                  outFile.println("(%" + src2.getValue() + ")");
+                }
+
+                else {
+                  throw new X86CodegenException(
+                      "assembleStore: unexpected src2");
+                }
+              }
             }
             break;
 
-          case Operation.X86_OPER_PUSH:
+          case X86_PUSH:
             outFile.print("\tpushl\t");
             src0 = currOper.getSrcOperand(0);
-            if (src0.getType() == Operand.OPERAND_INT) {
-              outFile.println("$" + ((Integer)src0.getValue()).intValue());
+            if (src0.getType() == Operand.OperandType.INTEGER) {
+              outFile.println("$" + ( (Integer) src0.getValue()).intValue());
             }
             else {
-              outFile.println("%" + ((String)src0.getValue()));
+              outFile.println("%" + ( (String) src0.getValue()));
             }
             break;
 
-          case Operation.X86_OPER_POP:
+          case X86_POP:
             outFile.print("\tpopl\t");
             Operand dest0 = currOper.getDestOperand(0);
-            if (dest0.getType() == Operand.OPERAND_INT) {
-              outFile.println("$" + ((Integer)dest0.getValue()).intValue());
+            if (dest0.getType() == Operand.OperandType.INTEGER) {
+              outFile.println("$" + ( (Integer) dest0.getValue()).intValue());
             }
             else {
-              outFile.println("%" + ((String)dest0.getValue()));
+              outFile.println("%" + ( (String) dest0.getValue()));
             }
             break;
 
-          case Operation.OPER_ASSIGN:
-          case Operation.X86_OPER_MOV:
-              // movl $2, %eax    or   movl  $eax, $ebx
+          case ASSIGN:
+          case X86_MOV:
+
+            // movl $2, %eax    or   movl  $eax, $ebx
             outFile.print("\tmovl\t");
             src0 = currOper.getSrcOperand(0);
-            if (src0.getType() == Operand.OPERAND_INT) {
-              outFile.print("$" + ((Integer)src0.getValue()).intValue());
+            if (src0.getType() == Operand.OperandType.INTEGER) {
+              outFile.print("$" + ( (Integer) src0.getValue()).intValue());
             }
             else {
-              outFile.print("%" + ((String)src0.getValue()));
+              outFile.print("%" + ( (String) src0.getValue()));
             }
-            outFile.println(", %" + ((String) currOper.getDestOperand(0).getValue()));
+            outFile.println(", %" +
+                            ( (String) currOper.getDestOperand(0).getValue()));
             break;
 
-
-          case Operation.X86_OPER_CMP:
+          case X86_CMP:
             outFile.print("\tcmpl\t");
             src1 = currOper.getSrcOperand(1);
-            if (src1.getType() == Operand.OPERAND_INT) {
-              outFile.print("$" + ((Integer)src1.getValue()).intValue() + ", ");
+            if (src1.getType() == Operand.OperandType.INTEGER) {
+              outFile.print("$" + ( (Integer) src1.getValue()).intValue() +
+                            ", ");
             }
             else {
-              outFile.print("%" + ((String)src1.getValue()) + ", ");
+              outFile.print("%" + ( (String) src1.getValue()) + ", ");
             }
             src0 = currOper.getSrcOperand(0);
-            if (src0.getType() == Operand.OPERAND_INT) {
-              outFile.println("$" + ((Integer)src0.getValue()).intValue());
+            if (src0.getType() == Operand.OperandType.INTEGER) {
+              outFile.println("$" + ( (Integer) src0.getValue()).intValue());
             }
             else {
-              outFile.println("%" + ((String)src0.getValue()));
+              outFile.println("%" + ( (String) src0.getValue()));
             }
             break;
 
-          case Operation.X86_OPER_BEQ:
-          case Operation.X86_OPER_BNE:
-          case Operation.X86_OPER_BLT:
-          case Operation.X86_OPER_BLE:
-          case Operation.X86_OPER_BGT:
-          case Operation.X86_OPER_BGE:
+          case X86_BEQ:
+          case X86_BNE:
+          case X86_BLT:
+          case X86_BLE:
+          case X86_BGT:
+          case X86_BGE:
             assembleBranch(currOper);
             break;
 
-          case Operation.OPER_LT:
-          case Operation.OPER_LTE:
-          case Operation.OPER_GT:
-          case Operation.OPER_GTE:
-          case Operation.OPER_EQUAL:
-          case Operation.OPER_NOTEQ:
-          case Operation.OPER_FUNC_ENTRY:
-          case Operation.OPER_FUNC_EXIT:
-          case Operation.OPER_BEQ:
-          case Operation.OPER_BNE:
-          case Operation.OPER_MUL_I:
-          case Operation.OPER_DIV_I:
+          case LT:
+          case LTE:
+          case GT:
+          case GTE:
+          case EQUAL:
+          case NOT_EQUAL:
+          case FUNC_ENTRY:
+          case FUNC_EXIT:
+          case BEQ:
+          case BNE:
+          case MUL_I:
+          case DIV_I:
           default:
             throw new X86CodegenException("assembler: unknown oper type " +
-                      currOper.getType());
+                                          currOper.getType());
         }
       }
     }
@@ -233,16 +322,16 @@ public class X86AssemblyGenerator {
 
   private void assembleArithmetic(Operation oper) {
 
-    if (oper.getType() == Operation.OPER_ADD_I) {
+    if (oper.getType() == Operation.OperationType.ADD_I) {
       outFile.print("\taddl\t");
     }
-    else if (oper.getType() == Operation.OPER_SUB_I) {
+    else if (oper.getType() == Operation.OperationType.SUB_I) {
       outFile.print("\tsubl\t");
     }
-    else if (oper.getType() == Operation.X86_OPER_MUL_I) {
+    else if (oper.getType() == Operation.OperationType.X86_MUL_I) {
       outFile.print("\timull\t");
     }
-    else if (oper.getType() == Operation.X86_OPER_DIV_I) {
+    else if (oper.getType() == Operation.OperationType.X86_DIV_I) {
       outFile.print("\tidivl\t");
     }
     else {
@@ -250,19 +339,19 @@ public class X86AssemblyGenerator {
     }
 
     Operand src1 = oper.getSrcOperand(1);
-    if (src1.getType() == Operand.OPERAND_INT) {
-      outFile.print("$" + ((Integer)src1.getValue()).intValue());
+    if (src1.getType() == Operand.OperandType.INTEGER) {
+      outFile.print("$" + ( (Integer) src1.getValue()).intValue());
     }
     else {
-      outFile.print("%" + ((String)src1.getValue()));
+      outFile.print("%" + ( (String) src1.getValue()));
     }
     outFile.print(", ");
     Operand src0 = oper.getSrcOperand(0);
-    if (src0.getType() == Operand.OPERAND_INT) {
-      outFile.println("$" + ((Integer)src0.getValue()).intValue());
+    if (src0.getType() == Operand.OperandType.INTEGER) {
+      outFile.println("$" + ( (Integer) src0.getValue()).intValue());
     }
     else {
-      outFile.println("%" + ((String)src0.getValue()));
+      outFile.println("%" + ( (String) src0.getValue()));
     }
 
   }
@@ -273,29 +362,29 @@ public class X86AssemblyGenerator {
 
   private void assembleBranch(Operation oper) {
     switch (oper.getType()) {
-      case Operation.X86_OPER_BEQ:
+      case X86_BEQ:
         outFile.print("\tje\t");
         break;
-      case Operation.X86_OPER_BNE:
+      case X86_BNE:
         outFile.print("\tjne\t");
         break;
-      case Operation.X86_OPER_BLT:
+      case X86_BLT:
         outFile.print("\tjl\t");
         break;
-      case Operation.X86_OPER_BLE:
+      case X86_BLE:
         outFile.print("\tjle\t");
         break;
-      case Operation.X86_OPER_BGT:
+      case X86_BGT:
         outFile.print("\tjg\t");
         break;
-      case Operation.X86_OPER_BGE:
+      case X86_BGE:
         outFile.print("\tjge\t");
         break;
       default:
         throw new X86CodegenException("assembleBranch: bad oper type");
     }
     outFile.println(oper.getBlock().getFunc().getName() + "_bb" +
-        ((Integer) oper.getSrcOperand(0).getValue()).intValue());
+                    ( (Integer) oper.getSrcOperand(0).getValue()).intValue());
   }
 
   private void peepholeOpti(Function func) {
@@ -303,23 +392,23 @@ public class X86AssemblyGenerator {
   }
 
   private void removeWorthlessMoves(Function func) {
-      // here we look for movl %EAX, %EAX
+    // here we look for movl %EAX, %EAX
     for (BasicBlock currBlock = func.getFirstBlock(); currBlock != null;
-          currBlock = currBlock.getNextBlock()) {
+         currBlock = currBlock.getNextBlock()) {
       Operation nextOper;
       for (Operation currOper = currBlock.getFirstOper(); currOper != null;
-          currOper = nextOper) {
-          // we use nextOper here because we may be deleting currOper and would
-          // be unable to follow its next ptr at end of loop
+           currOper = nextOper) {
+        // we use nextOper here because we may be deleting currOper and would
+        // be unable to follow its next ptr at end of loop
         nextOper = currOper.getNextOper();
-        if ( (currOper.getType() != Operation.OPER_ASSIGN) &&
-             (currOper.getType() != Operation.X86_OPER_MOV) ) {
+        if ( (currOper.getType() != Operation.OperationType.ASSIGN) &&
+            (currOper.getType() != Operation.OperationType.X86_MOV)) {
           continue;
         }
-        if (currOper.getDestOperand(0).getType() != Operand.OPERAND_MACRO) {
+        if (currOper.getDestOperand(0).getType() != Operand.OperandType.MACRO) {
           continue;
         }
-        if (currOper.getSrcOperand(0).getType() != Operand.OPERAND_MACRO) {
+        if (currOper.getSrcOperand(0).getType() != Operand.OperandType.MACRO) {
           continue;
         }
         String dest = (String) currOper.getDestOperand(0).getValue();

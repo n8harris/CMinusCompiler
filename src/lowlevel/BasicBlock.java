@@ -22,6 +22,9 @@ import dataflow.BitArraySet;
 public class BasicBlock {
 
     // The function in which this BasicBlock resides
+  /**
+   * func - a reference to the enclosing Function
+   */
   private Function func;
     // The function needs a list of blocks; the next 2 references serve to
     // doubly connect this list
@@ -56,25 +59,14 @@ public class BasicBlock {
      * @param newFunc is the name of the function this block will be in
      */
   public BasicBlock(Function newFunc) {
-    this (newFunc, null);
-  }
-    /**
-     * @param newFunc is the name of the function this block will be in
-     * @param prev is a reference to the previous BasicBlock
-     */
-  public BasicBlock (Function newFunc, BasicBlock prev) {
-    blockNum = newFunc.getNewBlockNum();
-    func = newFunc;
-    nextBlock = null;
-    firstOper = null;
-    lastOper = null;
-    prevBlock = prev;
-    if (prev != null) {
-      prev.setNextBlock(this);
-    }
-
-    inEdges = new LinkedList();
-    outEdges = new LinkedList();
+   blockNum = newFunc.getNewBlockNum();
+   func = newFunc;
+   nextBlock = null;
+   firstOper = null;
+   lastOper = null;
+   prevBlock = null;
+   inEdges = new LinkedList();
+   outEdges = new LinkedList();
   }
 /***************************************************************************/
   // accessor methods
@@ -193,7 +185,11 @@ public class BasicBlock {
     throw new LowLevelException("BasicBlock: no block corresponds to num" +
                                   blockNum);
   }
-
+  /**
+   * This is the main method for adding an Operation to a block
+   * @param newOper - Operation to be added to the end of the linked list of
+   * Operations contained in the block.
+   */
   public void appendOper (Operation newOper) {
     if (firstOper == null) {
       firstOper = newOper;
@@ -206,7 +202,11 @@ public class BasicBlock {
     }
     newOper.setBlock(this);
   }
-    // splices the oper out of the list
+  /**
+   *  splices an Operation out of the BasicBlock
+   * @param oper - Operation to be removed
+   */
+
   public void removeOper (Operation oper) {
     if (oper == firstOper) {
       firstOper = oper.getNextOper();
@@ -222,6 +222,12 @@ public class BasicBlock {
     }
   }
 
+  /**
+   * Inserts Operation into list just after an Operation already in list.
+   * @param oper - Existing Operation which the new Operation will be
+   * added after.
+   * @param insertOper Operation to be inserted into the block
+   */
   public void insertOperAfter(Operation oper, Operation insertOper) {
 
     insertOper.setNextOper(oper.getNextOper());
@@ -235,7 +241,12 @@ public class BasicBlock {
     oper.setNextOper(insertOper);
     insertOper.setPrevOper(oper);
   }
-
+  /**
+   * Inserts Operation into list just prior to an Operation already in list.
+   * @param oper - Existing Operation which the new Operation will be
+   * added before.
+   * @param insertOper Operation to be inserted into the block
+   */
   public void insertOperBefore(Operation oper, Operation insertOper) {
     insertOper.setPrevOper(oper.getPrevOper());
 
@@ -248,6 +259,22 @@ public class BasicBlock {
     oper.setPrevOper(insertOper);
     insertOper.setNextOper(oper);
   }
+  /**
+   * Inserts Operation into the beginning of the Operation list.
+   * @param insertOper Operation to be inserted into the beginning of the
+   * block.
+   */
+  public void insertFirst(Operation insertOper) {
+    insertOper.setNextOper(firstOper);
+    if (firstOper != null) {
+      firstOper.setPrevOper(insertOper);
+    }
+    else {
+      lastOper = insertOper;
+    }
+    firstOper = insertOper;
+  }
+
 
   public void addOutEdge(BasicBlock out) {
     if (outEdges == null) {

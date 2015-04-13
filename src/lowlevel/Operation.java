@@ -26,51 +26,18 @@ import dataflow.BitArraySet;
 
 public class Operation {
 
+  public enum OperationType {UNKNOWN, FUNC_ENTRY, FUNC_EXIT, ASSIGN, ADD_I,
+        SUB_I, MUL_I, DIV_I, LT, LTE, GT, GTE, EQUAL, NOT_EQUAL, RETURN, JMP,
+        BEQ, BNE, PASS, CALL, LOAD_I, STORE_I, X64_ADD_Q, X64_SUB_Q, X64_LOAD_Q, X64_STORE_Q,
+        X86_MUL_I, X86_DIV_I, X86_BEQ, X86_BNE, X86_BLT, X86_BLE, X86_BGT,
+        X86_BGE, X86_PUSH, X86_POP, X86_MOV, X86_CMP
+  }
+
     // Constants defined to allow the # of Operands to be tailored to a specific
     // architecture
   public static final int MAX_DEST_OPERANDS = 2;
   public static final int MAX_SRC_OPERANDS = 4;
 
-    // Currently defined Operation types
-  public static final int OPER_UNKNOWN = 0;
-  public static final int OPER_FUNC_ENTRY = 1;
-  public static final int OPER_FUNC_EXIT = 2;
-  public static final int OPER_ASSIGN = 3;
-
-  public static final int OPER_ADD_I = 20;
-  public static final int OPER_SUB_I = 21;
-  public static final int OPER_MUL_I = 22;
-  public static final int OPER_DIV_I = 23;
-  public static final int X86_OPER_MUL_I = 24;
-  public static final int X86_OPER_DIV_I = 25;
-
-  public static final int OPER_LT = 40;
-  public static final int OPER_LTE = 41;
-  public static final int OPER_GT = 42;
-  public static final int OPER_GTE = 43;
-  public static final int OPER_EQUAL = 44;
-  public static final int OPER_NOTEQ = 45;
-
-  public static final int OPER_RETURN = 60;
-  public static final int OPER_JMP = 61;
-  public static final int OPER_BEQ = 62;
-  public static final int OPER_BNE = 63;
-  public static final int X86_OPER_BEQ = 64;
-  public static final int X86_OPER_BNE = 65;
-  public static final int X86_OPER_BLT = 66;
-  public static final int X86_OPER_BLE = 67;
-  public static final int X86_OPER_BGT = 68;
-  public static final int X86_OPER_BGE = 69;
-
-  public static final int OPER_PASS = 80;
-  public static final int OPER_CALL = 81;
-
-  public static final int OPER_LOAD_I = 100;
-  public static final int OPER_STORE_I = 101;
-  public static final int X86_OPER_PUSH = 102;
-  public static final int X86_OPER_POP = 103;
-  public static final int X86_OPER_MOV = 104;
-  public static final int X86_OPER_CMP = 105;
 
 /***************************************************************************/
     // instance variables
@@ -82,7 +49,7 @@ public class Operation {
     // A unique number identifying the Operation; set in constructor
   private int opNum;
     // The type of Operation, as defined in consts above
-  private int opType;
+  private OperationType opType;
     // Arrays of src and destination Operands; Their size is determined by
     // the consts above
   private Operand []dest;
@@ -99,46 +66,22 @@ public class Operation {
 /***************************************************************************/
   // constructors
     /**
-     * @param currBlock is the block containing the Operation
-     */
-  public Operation(BasicBlock currBlock) {
-    this (OPER_UNKNOWN, currBlock, null);
-  }
-    /**
-     * @param currBlock is the block containing the Operation
-     * @param prev is a reference to the previous Operation
-     */
-  public Operation(BasicBlock currBlock, Operation prev) {
-    this (OPER_UNKNOWN, currBlock, prev);
-  }
-    /**
-     * Probably the most common constructor
+     * Primary constructor for Operations
      * @param type is the Operation type (e.g.,OPER_JMP)
      * @param currBlock is the block containing the Operation
      */
-  public Operation (int type, BasicBlock currBlock) {
-    this(type, currBlock, null);
-  }
-    /**
-     * @param type is the Operation type (e.g.,OPER_JMP)
-     * @param currBlock is the block containing the Operation
-     * @param prev is a reference to the previous Operation
-     */
-  public Operation (int type, BasicBlock currBlock, Operation prev) {
+  public Operation (OperationType type, BasicBlock currBlock) {
     opNum = currBlock.getFunc().getNewOperNum();
     opType = type;
     block = currBlock;
-    prevOper = prev;
+    prevOper = null;
     nextOper = null;
     dest = new Operand[MAX_DEST_OPERANDS];
     src = new Operand[MAX_SRC_OPERANDS];
-    if (prev != null) {
-      prev.setNextOper(this);
-    }
     maxSrc = -1;
     maxDest = -1;
-  }
 
+  }
 
 /***************************************************************************/
   // accessor methods
@@ -148,10 +91,10 @@ public class Operation {
   public void setNum(int newNum) {
     opNum = newNum;
   }
-  public int getType () {
+  public OperationType getType () {
     return opType;
   }
-  public void setType (int newType) {
+  public void setType (OperationType newType) {
     opType = newType;
   }
 
@@ -258,7 +201,7 @@ public class Operation {
 
   public boolean hasRegDest() {
     if (dest[0] != null) {
-      if (dest[0].getType() == Operand.OPERAND_REG) {
+      if (dest[0].getType() == Operand.OperandType.REGISTER) {
         return true;
       }
     }
@@ -268,95 +211,104 @@ public class Operation {
     // converts operation type into a string for printing
   public String printOperType() {
     switch (opType) {
-      case OPER_FUNC_ENTRY:
+      case FUNC_ENTRY:
         return "Func_Entry";
-      case OPER_FUNC_EXIT:
+      case FUNC_EXIT:
         return "Func_Exit";
-      case OPER_ASSIGN:
+      case ASSIGN:
         return "Mov";
-      case OPER_ADD_I:
+      case ADD_I:
         return "Add_I";
-      case OPER_SUB_I:
+      case SUB_I:
         return "Sub_I";
-      case OPER_MUL_I:
+      case MUL_I:
         return "Mul_I";
-      case OPER_DIV_I:
+      case DIV_I:
         return "Div_I";
-      case OPER_LT:
+      case LT:
         return "LT";
-      case OPER_LTE:
+      case LTE:
         return "LTE";
-      case OPER_GT:
+      case GT:
         return "GT";
-      case OPER_GTE:
+      case GTE:
         return "GTE";
-      case OPER_EQUAL:
+      case EQUAL:
         return "EQ";
-      case OPER_NOTEQ:
+      case NOT_EQUAL:
         return "NEQ";
-      case OPER_RETURN:
+      case RETURN:
         return "Return";
-      case OPER_JMP:
+      case JMP:
         return "Jmp";
-      case OPER_PASS:
+      case PASS:
         return "Pass";
-      case OPER_CALL:
+      case CALL:
         return "JSR";
-      case OPER_BEQ:
+      case BEQ:
         return "BEQ";
-      case OPER_BNE:
+      case BNE:
         return "BNE";
-      case OPER_LOAD_I:
+      case LOAD_I:
         return "Load";
-      case OPER_STORE_I:
+      case STORE_I:
         return "Store";
-      case X86_OPER_PUSH:
+      case X86_PUSH:
         return "Push";
-      case X86_OPER_POP:
+      case X86_POP:
         return "Pop";
-      case X86_OPER_MOV:
+      case X86_MOV:
         return "Mov";
-      case X86_OPER_CMP:
+      case X86_CMP:
         return "Cmp";
-      case X86_OPER_BEQ:
+      case X86_BEQ:
         return "BEQ";
-      case X86_OPER_BNE:
+      case X86_BNE:
         return "BNE";
-      case X86_OPER_BLT:
+      case X86_BLT:
         return "BLT";
-      case X86_OPER_BLE:
+      case X86_BLE:
         return "BLE";
-      case X86_OPER_BGT:
+      case X86_BGT:
         return "BGT";
-      case X86_OPER_BGE:
+      case X86_BGE:
         return "BGE";
-      case X86_OPER_MUL_I:
+      case X86_MUL_I:
         return "Mul";
-      case X86_OPER_DIV_I:
+      case X86_DIV_I:
         return "Div";
+      case X64_ADD_Q:
+          return "Add_Q";
+      case X64_SUB_Q:
+          return "Sub_Q";
+      case X64_LOAD_Q:
+          return "Load_Q";
+      case X64_STORE_Q:
+          return "Store_Q";
+
       default:
         throw new LowLevelException ("Operation: unexpected op type");
     }
   }
 
   public boolean isBranchOper() {
-    return ( (opType == OPER_BEQ) ||
-             (opType == OPER_BNE) ||
-             (opType == X86_OPER_BEQ) ||
-             (opType == X86_OPER_BNE) ||
-             (opType == X86_OPER_BLT) ||
-             (opType == X86_OPER_BLE) ||
-             (opType == X86_OPER_BGT) ||
-             (opType == X86_OPER_BGE) );
+    return ( (opType == OperationType.BEQ) ||
+             (opType == OperationType.BNE) ||
+             (opType == OperationType.X86_BEQ) ||
+             (opType == OperationType.X86_BNE) ||
+             (opType == OperationType.X86_BLT) ||
+             (opType == OperationType.X86_BLE) ||
+             (opType == OperationType.X86_BGT) ||
+             (opType == OperationType.X86_BGE) );
   }
 
   public boolean isX86BranchOper() {
-    return ( (opType == X86_OPER_BEQ) ||
-             (opType == X86_OPER_BNE) ||
-             (opType == X86_OPER_BLT) ||
-             (opType == X86_OPER_BLE) ||
-             (opType == X86_OPER_BGT) ||
-             (opType == X86_OPER_BGE) );
+    return ( (opType == OperationType.X86_BEQ) ||
+             (opType == OperationType.X86_BNE) ||
+             (opType == OperationType.X86_BLT) ||
+             (opType == OperationType.X86_BLE) ||
+             (opType == OperationType.X86_BGT) ||
+             (opType == OperationType.X86_BGE) );
   }
 
     // prints the Operation, recursively calling print on each Operand

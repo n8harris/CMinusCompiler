@@ -15,7 +15,12 @@ package optimizer;
 
 public class CodeOptimizationException extends RuntimeException {
 
-  public CodeOptimizationException(String msg) {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public CodeOptimizationException(String msg) {
     super(msg);
   }
 }

@@ -97,13 +97,15 @@ public class Function extends CodeItem {
     currBlock = null;
     symbolTable = new HashMap();
     maxRegNum = 0;
-    returnBlock = null;
+    returnBlock = genReturnBlock();
     firstUnconnectedBlock = null;
     lastUnconnectedBlock = null;
     optimize = false;
   }
 /***************************************************************************/
     // accessor methods
+
+
   public int getType () {
     return funcType;
   }
@@ -128,28 +130,59 @@ public class Function extends CodeItem {
   public void setFrameSize (int size) {
     frameSize = size;
   }
+
+  /**
+   *
+   * @return BasicBlock which is the current block; i.e., the block
+   * that code should be placed within during code generation
+   */
   public BasicBlock getCurrBlock () {
     return currBlock;
   }
+  /**
+   *
+   * @return BasicBlock which is the first block in the main chain
+   */
   public BasicBlock getFirstBlock () {
     return firstBlock;
   }
+  /**
+   *
+   * @return BasicBlock which is the last block in the main chain
+   */
   public BasicBlock getLastBlock () {
     return lastBlock;
   }
+  /**
+   *
+   * @param block BasicBlock to be used as the current block; i.e., the block
+   * that code should be placed within during code generation
+   */
   public void setCurrBlock (BasicBlock block) {
     currBlock = block;
   }
   public void setLastBlock (BasicBlock block) {
     lastBlock = block;
   }
+  /**
+   *
+   * @return the head of the linked list of FuncParams
+   */
   public FuncParam getfirstParam () {
     return firstParam;
   }
+  /**
+   *
+   * @param param - the FuncParam which is the head of the list of
+   * FuncParams
+   */
   public void setFirstParam (FuncParam param) {
     firstParam = param;
   }
-
+  /**
+   *
+   * @return a reference to the function's local symbol table
+   */
   public HashMap getTable () {
     return symbolTable;
   }
@@ -160,7 +193,15 @@ public class Function extends CodeItem {
   public void setOptimize (boolean opt) {
     optimize = opt;
   }
-
+  /**
+   * This block is created by the function constructor, and should be the
+   * single exit point for the function; i.e., all return statements should
+   * generate jumps to this block.
+   *
+   * @return a reference to the function's return block.  This block is created
+   * by the function constructor, and should be the single exit point for the
+   * function; i.e., all return statements should generate jumps to this block.
+   */
   public BasicBlock getReturnBlock() {
     return returnBlock;
   }
@@ -192,42 +233,66 @@ public class Function extends CodeItem {
     // The next three methods are for getting new BasicBlock, Operation, and
     // register numbers.  They simply pre-increment the instance variable which
     // keeps track of the largest number given out so far
-  public int getNewBlockNum () {
+
+   /**
+     * This method is used by the Block constructor to number blocks in
+     * order created.  It probably should only be used by this constructor.
+     * @return a new Block number
+     */
+    public int getNewBlockNum () {
     return ++maxBlockNum;
   }
+  /**
+   * This method is used by the Operation constructor to number operations in
+   * order created.  It probably should only be used by this constructor.
+   * @return int
+   */
   public int getNewOperNum () {
     return ++maxOperNum;
   }
+  /**
+   * This method generates the next sequential register number.  It will be
+   * used by the code generator to get a new virtual register number.
+   * @return int
+   */
   public int getNewRegNum () {
     return ++maxRegNum;
   }
 
-    // This method automates the creation of the first basic block, which should
-    // start with the FUNC_ENTRY operation.  Subsequent code can be added to
-    // this block, or the user could decide to close this block out and add any
-    // code to a subsequent block.
+  /**
+   *
+   * This method automates the creation of the first basic block, which should
+   * start with the FUNC_ENTRY operation.  Subsequent code can be added to
+   * this block, or the user could decide to close this block out and add any
+   * code to a subsequent block.  It should be added to the main chain of BBs.
+  */
   public void createBlock0 () {
-    firstBlock = new BasicBlock(this, null);
+    firstBlock = new BasicBlock(this);
     lastBlock = firstBlock;
     Operation newOper =
-          new Operation(Operation.OPER_FUNC_ENTRY, firstBlock, null);
+          new Operation(Operation.OperationType.FUNC_ENTRY, firstBlock);
 
     firstBlock.appendOper(newOper);
   }
 
-    // Each function has a single exit point, the return block.  When a return
-    // statement is executed, it needs to generate this return block if it has
-    // not already been created.  This method automates the creation of the
-    // return block.  The user should not need to add further code to this
-    // block.
+  /**
+   * Generates return block.
+   * @return new block which serves as single exit point of function.
+   *
+   * Each function has a single exit point, the return block.  When a return
+   * statement is executed, it needs to generate this return block if it has
+   * not already been created.  This method automates the creation of the
+   * return block.  The user should not need to add further code to this
+   * block.
+   */
   public BasicBlock genReturnBlock() {
-    returnBlock = new BasicBlock(this, null);
+    returnBlock = new BasicBlock(this);
     Operation newOper =
-            new Operation(Operation.OPER_FUNC_EXIT, returnBlock, null);
+            new Operation(Operation.OperationType.FUNC_EXIT, returnBlock);
     returnBlock.appendOper(newOper);
     Operation newOper2 =
-            new Operation(Operation.OPER_RETURN, returnBlock, null);
-    Operand src = new Operand(Operand.OPERAND_MACRO,"RetReg");
+            new Operation(Operation.OperationType.RETURN, returnBlock);
+    Operand src = new Operand(Operand.OperandType.MACRO,"RetReg");
     newOper2.setSrcOperand(0, src);
     returnBlock.appendOper(newOper2);
 
@@ -238,8 +303,12 @@ public class Function extends CodeItem {
     // maintains 2 lists: the main path through the code, and the list of "else"
     // blocks.
 
-    // This method supports adding a block to the "main" path through code.  It
-    // will probably not be used too frequently.
+    /**
+     *
+     * @param newBlock - block to be appended to main chain.
+     * This method supports adding a block to the "main" path through code.  It
+     * will probably not be used too frequently.
+    */
   public void appendBlock(BasicBlock newBlock) {
     lastBlock.setNextBlock(newBlock);
     newBlock.setPrevBlock(lastBlock);
@@ -253,10 +322,15 @@ public class Function extends CodeItem {
     }
     lastBlock = curr;
   }
-    // This method will be the most frequently used of the 3.  It is used when
-    // you don't know if you are generating code for the "main" path or the
-    // "unconnected" path - you just know that you need to append relative to
-    // the current block.
+
+  /**
+   * Appends a block to the function's current block
+   * @param newBlock - block to be appended to the current block
+   * This method will be the most frequently used of the 3.  It is used when
+   * you don't know if you are generating code for the "main" path or the
+   * "unconnected" path - you just know that you need to append relative to
+   * the current block.
+  */
   public void appendToCurrentBlock(BasicBlock newBlock) {
     BasicBlock currBlock = getCurrBlock();
     currBlock.setNextBlock(newBlock);
@@ -274,9 +348,14 @@ public class Function extends CodeItem {
       lastUnconnectedBlock = lastInChain;
     }
   }
-    // This method is used when you know the block you are appending definitely
-    // goes on the "unconnected" list.  An example might be when you put your
-    // "else" block on the unconnected list.
+  /**
+   * Unconditionally appends to "unconnnected chain"
+   * @param newBlock - block to be appended to unconnected chain
+   * This method is used when you know the block you are appending definitely
+   * goes on the "unconnected" list.  An example might be when you put your
+   * "else" block on the unconnected list.
+   */
+
   public void appendUnconnectedBlock(BasicBlock newBlock) {
     if (lastUnconnectedBlock != null) {
       lastUnconnectedBlock.setNextBlock(newBlock);
@@ -294,7 +373,6 @@ public class Function extends CodeItem {
     }
     lastUnconnectedBlock = lastInChain;
   }
-
 
   public void removeBlock(BasicBlock block) {
     if (block.getPrevBlock() != null) {
@@ -328,6 +406,7 @@ public class Function extends CodeItem {
       }
     }
   }
+
 /***************************************************************************/
     // dataflow support
 

@@ -19,6 +19,7 @@ public class JumpOptimizer {
   public void optimize () {
     boolean changesMade = true;
     while (changesMade) {
+      changesMade = false;
       for (CodeItem currItem = firstItem; currItem != null;
                                           currItem = currItem.getNextItem()) {
         if (currItem instanceof Data) {
@@ -46,7 +47,7 @@ public class JumpOptimizer {
                       currBlock = currBlock.getNextBlock()) {
         for (Operation currOper = currBlock.getFirstOper(); currOper != null;
                       currOper = currOper.getNextOper()) {
-          if ( (currOper.getType() != Operation.OPER_JMP) &&
+          if ( (currOper.getType() != Operation.OperationType.JMP) &&
                (!currOper.isBranchOper()) ) {
             continue;
           }
@@ -54,15 +55,15 @@ public class JumpOptimizer {
             // If the target of the branch is a BB with just a jmp, optimize
           int tgtBlockNum;
           Operand tgtOperand;
-          if (currOper.getType() == Operation.OPER_JMP) {
-            if (currOper.getSrcOperand(0).getType() != Operand.OPERAND_BLOCK) {
+          if (currOper.getType() == Operation.OperationType.JMP) {
+            if (currOper.getSrcOperand(0).getType() != Operand.OperandType.BLOCK) {
               throw new CodeOptimizationException ("JmpOpti: unexpected jmp operand");
             }
             tgtOperand = currOper.getSrcOperand(0);
             tgtBlockNum = ((Integer)tgtOperand.getValue()).intValue();
           }
           else {
-            if (currOper.getSrcOperand(2).getType() != Operand.OPERAND_BLOCK) {
+            if (currOper.getSrcOperand(2).getType() != Operand.OperandType.BLOCK) {
               throw new CodeOptimizationException ("JmpOpti: unexpected branch operand");
             }
             tgtOperand = currOper.getSrcOperand(2);
@@ -71,8 +72,8 @@ public class JumpOptimizer {
           BasicBlock tgtBlock = BasicBlock.getBlockFromNum(func, tgtBlockNum);
           Operation tgtOper = tgtBlock.getFirstOper();
           if ( (tgtOper != null) &&
-               (tgtOper.getType() == Operation.OPER_JMP) ) {
-            if (tgtOper.getSrcOperand(0).getType() != Operand.OPERAND_BLOCK) {
+               (tgtOper.getType() == Operation.OperationType.JMP) ) {
+            if (tgtOper.getSrcOperand(0).getType() != Operand.OperandType.BLOCK) {
               throw new CodeOptimizationException ("JmpOpti: unexpected jmp operand(2)");
             }
             int tgtBlock2Num = ((Integer)tgtOper.getSrcOperand(0).getValue()).intValue();
@@ -139,8 +140,22 @@ public class JumpOptimizer {
       }
       int emptyBlockNum = currBlock.getBlockNum();
       int nextBlockNum = currBlock.getNextBlock().getBlockNum();
-      remap [emptyBlockNum] = nextBlockNum;
-
+//      remap [emptyBlockNum] = nextBlockNum;
+//
+	  if (remap[nextBlockNum] == 0) {
+		  remap [emptyBlockNum] = nextBlockNum;
+	  }
+	  else {
+		  remap[emptyBlockNum] = remap[nextBlockNum];
+	  }
+	  // now see if anyone is already mapping to the emptyBlockNum
+	  for (int i=0; i < remap.length; i++){
+		  if (remap[i] == emptyBlockNum) {
+			  remap[i] = remap[emptyBlockNum];
+		  }
+	  }
+	  
+//
       changesMade = true;
       func.removeBlock(currBlock);
     }
@@ -151,7 +166,7 @@ public class JumpOptimizer {
                     currOper = currOper.getNextOper()) {
 
         int tgtOperandNum;
-        if (currOper.getType() == Operation.OPER_JMP) {
+        if (currOper.getType() == Operation.OperationType.JMP) {
           tgtOperandNum = 0;
         }
         else if (currOper.isBranchOper()) {
@@ -203,12 +218,12 @@ public class JumpOptimizer {
         if (lastOper == null) {
           continue;
         }
-        if ( (lastOper.getType() != Operation.OPER_JMP) &&
-             (lastOper.getType() != Operation.OPER_RETURN) )  {
+        if ( (lastOper.getType() != Operation.OperationType.JMP) &&
+             (lastOper.getType() != Operation.OperationType.RETURN) )  {
           continue;
         }
           // for jmps, if tgt is next block can't do opti
-        if (lastOper.getType() == Operation.OPER_JMP) {
+        if (lastOper.getType() == Operation.OperationType.JMP) {
           int lastTgt = ((Integer)lastOper.getSrcOperand(0).getValue()).intValue();
           if (lastTgt == currBlock.getBlockNum()) {
             continue;
@@ -224,7 +239,7 @@ public class JumpOptimizer {
                     currOper = currOper.getNextOper()) {
 
           int tgtOperandNum;
-          if (currOper.getType() == Operation.OPER_JMP) {
+          if (currOper.getType() == Operation.OperationType.JMP) {
             tgtOperandNum = 0;
           }
           else if (currOper.isBranchOper()) {
