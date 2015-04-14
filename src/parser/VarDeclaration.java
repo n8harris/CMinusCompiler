@@ -9,8 +9,8 @@ import java.io.IOException;
  */
 public class VarDeclaration extends Declaration {
     
-    Numeric num;
-    Identifier id;
+    private Numeric num;
+    private Identifier id;
     
     public VarDeclaration(Numeric n, Identifier i){
         id = i;
@@ -28,11 +28,40 @@ public class VarDeclaration extends Declaration {
     public void printDeclaration(String offset, BufferedWriter writer) throws IOException{
         writer.write(offset + "VarDeclaration");
         writer.newLine();
-        if(num != null){
+        if(getNum() != null){
             writer.write(offset + "    " + "ArraySize");
             writer.newLine();
-            num.printExpression(offset + "        ", writer);
+            getNum().printExpression(offset + "        ", writer);
         }
-        id.printExpression(offset + "    ", writer);
+        getId().printExpression(offset + "    ", writer);
+    }
+
+
+    /**
+     * @return the num
+     */
+    public Numeric getNum() {
+        return num;
+    }
+
+    /**
+     * @param num the num to set
+     */
+    public void setNum(Numeric num) {
+        this.num = num;
+    }
+
+    /**
+     * @return the id
+     */
+    public Identifier getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Identifier id) {
+        this.id = id;
     }
 }

@@ -3,6 +3,8 @@ package parser;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import lowlevel.CodeItem;
+import lowlevel.Data;
 
 /**
  *
@@ -40,6 +42,25 @@ public class Program {
         }
         writer.close();
         
+    }
+    
+    public CodeItem genLLCode() throws Exception{
+        CodeItem lowLevelCode = null;
+        for(Declaration d : declarationList){
+            switch (d.getClass().getName()){
+                case "VarDeclaration":
+                    VarDeclaration globalDecl = (VarDeclaration)d;
+                    Data globalVar = new Data(1, globalDecl.getId().getId());
+                    lowLevelCode.setNextItem(globalVar);
+                    break;
+                case "FunctionDeclaration":
+                    break;
+                default:
+                    throw new Exception();
+            }
+        }
+        
+        return lowLevelCode;
     }
     
     

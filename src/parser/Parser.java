@@ -28,7 +28,7 @@ public interface Parser {
     
     public Numeric parseNumeric() throws ParseException;
     
-    public FunctionDeclaration parseFunctionDeclaration(String s) throws ParseException;
+    public FunctionDeclaration parseFunctionDeclaration(String s, int type) throws ParseException;
     
     public Parameter parseParameter() throws ParseException;
     

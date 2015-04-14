@@ -75,7 +75,7 @@ public class CMinusParser implements Parser {
         switch(scanner.viewNextToken().getType()) {
             case VOID_TOKEN:
                 match(Token.TokenType.VOID_TOKEN);
-                Declaration funDecl = parseFunctionDeclaration(null);
+                Declaration funDecl = parseFunctionDeclaration(null, 0);
                 return funDecl;
             case INT_TOKEN:
                 match(Token.TokenType.INT_TOKEN);
@@ -89,7 +89,7 @@ public class CMinusParser implements Parser {
                     VarDeclaration vDecl = parseVarDeclaration(t.getData().toString());
                     return vDecl;
                 } else if(scanner.viewNextToken().getType() == Token.TokenType.OPENPAREN_TOKEN){
-                    FunctionDeclaration fDecl = parseFunctionDeclaration(t.getData().toString());
+                    FunctionDeclaration fDecl = parseFunctionDeclaration(t.getData().toString(), 1);
                     return fDecl;
                 } else {
                     if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
@@ -201,7 +201,7 @@ public class CMinusParser implements Parser {
     }
     
     @Override
-    public FunctionDeclaration parseFunctionDeclaration(String s) throws ParseException {
+    public FunctionDeclaration parseFunctionDeclaration(String s, int type) throws ParseException {
         Identifier id;
         //Checks if there is not an Identifier already associated with this fun-decl
 	if (s == null){
@@ -218,7 +218,7 @@ public class CMinusParser implements Parser {
         }
         match(Token.TokenType.CLOSEPAREN_TOKEN);
         CompoundStatement compoundStmt = parseCompoundStatement();
-        return new FunctionDeclaration(params, compoundStmt, id);
+        return new FunctionDeclaration(params, compoundStmt, id, type);
     }
     
     public Parameter parseParameter() throws ParseException{
