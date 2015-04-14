@@ -47,17 +47,18 @@ public class Program {
     public CodeItem genLLCode() throws Exception{
         CodeItem lowLevelCode = null;
         for(Declaration d : declarationList){
-            switch (d.getClass().getName()){
-                case "VarDeclaration":
+                if(d instanceof VarDeclaration){
                     VarDeclaration globalDecl = (VarDeclaration)d;
-                    Data globalVar = new Data(1, globalDecl.getId().getId());
-                    lowLevelCode.setNextItem(globalVar);
-                    break;
-                case "FunctionDeclaration":
-                    break;
-                default:
-                    throw new Exception();
-            }
+                    Data globalVar = new Data(Data.TYPE_INT, globalDecl.getId().getId());
+                    if(lowLevelCode == null){
+                        lowLevelCode = globalVar;
+                    } else {
+                        lowLevelCode.setNextItem(globalVar);
+                    }
+                    
+                } else {
+                }
+
         }
         
         return lowLevelCode;
