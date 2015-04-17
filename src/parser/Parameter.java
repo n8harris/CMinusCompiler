@@ -19,6 +19,20 @@ public class Parameter extends Expression {
     public void printParameter(String offset, BufferedWriter writer) throws IOException{
         writer.write(offset + "Parameter");
         writer.newLine();
-        id.printExpression(offset + "    ", writer);
+        getId().printExpression(offset + "    ", writer);
+    }
+
+    /**
+     * @return the id
+     */
+    public Identifier getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Identifier id) {
+        this.id = id;
     }
 }
