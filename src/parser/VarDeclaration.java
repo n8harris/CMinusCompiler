@@ -1,7 +1,9 @@
 package parser;
 
+import cminuscompiler.CMinusCompiler;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import lowlevel.Data;
 
 /**
  *
@@ -63,5 +65,11 @@ public class VarDeclaration extends Declaration {
      */
     public void setId(Identifier id) {
         this.id = id;
+    }
+    
+    public Data genLLCode(){
+        Data globalVar = new Data(Data.TYPE_INT, id.getId());
+        CMinusCompiler.globalHash.put(id.getId(), id.getId());
+        return globalVar;
     }
 }

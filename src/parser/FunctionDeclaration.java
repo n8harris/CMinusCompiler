@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lowlevel.BasicBlock;
+import lowlevel.Data;
+import lowlevel.FuncParam;
+import lowlevel.Function;
 
 /**
  *
@@ -99,6 +103,37 @@ public class FunctionDeclaration extends Declaration {
      */
     public void setType(int type) {
         this.type = type;
+    }
+    
+    public Function genLLCode(){
+        Function f = new Function(type, id.getId());
+                    if(params != null){
+                        FuncParam funcParams = new FuncParam();
+                        FuncParam nextParam = new FuncParam();
+                        for(Parameter p : params){
+                            if(funcParams.getName() == null){
+                                funcParams.setname(p.getId().getId());
+                                funcParams.setType(Data.TYPE_INT);
+                                f.getTable().put(f.getNewRegNum(), p.getId().getId());
+                                nextParam = funcParams;
+                            } else {
+                                FuncParam tempParam = new FuncParam(Data.TYPE_INT, p.getId().getId());
+                                nextParam.setNextParam(tempParam);
+                                f.getTable().put(f.getNewRegNum(), p.getId().getId());
+                                nextParam = tempParam;
+                            }
+                        }
+
+                        f.setFirstParam(funcParams);
+                    }
+                    f.createBlock0();
+                    BasicBlock newBlock = new BasicBlock(f);
+                    f.appendBlock(newBlock);
+                    f.setCurrBlock(newBlock);
+                    //funDecl.getCmpdStatement().genLLCode(f);
+                    
+                    return f;
+        
     }
     
 }
