@@ -67,9 +67,9 @@ public class VarDeclaration extends Declaration {
         this.id = id;
     }
     
+    @Override
     public Data genLLCode(){
-        Data globalVar = new Data(Data.TYPE_INT, id.getId());
-        CMinusCompiler.globalHash.put(id.getId(), id.getId());
-        return globalVar;
+        Data varDecl = new Data(Data.TYPE_INT, id.getId());
+        return varDecl;
     }
 }

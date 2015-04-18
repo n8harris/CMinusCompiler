@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lowlevel.Function;
 
 /**
  *
@@ -11,9 +12,9 @@ import java.util.logging.Logger;
  */
 public class Numeric extends Expression {
     
-    private String num;
+    private int num;
     
-    public Numeric (String n){
+    public Numeric (int n){
         num = n;
     }
     //Prints out the contents of BinaryExpression by recursively calling each objects
@@ -28,5 +29,9 @@ public class Numeric extends Expression {
         } catch (IOException ex) {
             Logger.getLogger(Numeric.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void genLLCode(Function f){
+        this.setRegNum(f.getNewRegNum());
     }
 }

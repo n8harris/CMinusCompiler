@@ -2,6 +2,7 @@ package parser;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import lowlevel.CodeItem;
 
 /**
  *
@@ -27,5 +28,7 @@ public abstract class Declaration {
     public void setRegNum(int regNum) {
         this.regNum = regNum;
     }
+    
+    public abstract CodeItem genLLCode();
 
 }

@@ -2,6 +2,7 @@ package parser;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import lowlevel.Function;
 
 /**
  *
@@ -20,6 +21,10 @@ public class ExpressionStatement extends Statement {
     @Override
     public void printStatement(String offset, BufferedWriter writer) throws IOException{
         exp.printExpression(offset, writer);
+    }
+    
+    public void genLLCode(Function f) throws Exception{
+        exp.genLLCode(f);
     }
     
 }

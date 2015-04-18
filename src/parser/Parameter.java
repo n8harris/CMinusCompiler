@@ -2,6 +2,7 @@ package parser;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import lowlevel.Function;
 
 /**
  *
@@ -34,5 +35,9 @@ public class Parameter extends Expression {
      */
     public void setId(Identifier id) {
         this.id = id;
+    }
+    
+    public void genLLCode(Function f) throws Exception{
+        id.genLLCode(f);
     }
 }

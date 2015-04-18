@@ -3,6 +3,10 @@ package parser;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import lowlevel.Function;
+import lowlevel.Operand;
+import lowlevel.Operation;
 
 /**
  *
@@ -27,5 +31,34 @@ public class CallExpression extends Expression {
         for (Expression expr : args) {
             expr.printExpression(offset + "    ", writer);
         }
+    }
+    
+    @Override
+    public void genLLCode(Function f) throws Exception{
+        Collections.reverse(args);
+        for(Expression exp : args){
+            exp.genLLCode(f);
+            Operation newOper =
+            new Operation(Operation.OperationType.PASS, f.getCurrBlock());
+            Operand src = new Operand(Operand.OperandType.REGISTER, exp.getRegNum());
+            newOper.setSrcOperand(0, src);
+            f.getCurrBlock().appendOper(newOper);
+        }
+        
+        Operation callOper =
+        new Operation(Operation.OperationType.CALL, f.getCurrBlock());
+        Operand src = new Operand(Operand.OperandType.STRING, id.getId());
+        callOper.setSrcOperand(0, src);
+        f.getCurrBlock().appendOper(callOper);
+        
+        Operation retOper =
+        new Operation(Operation.OperationType.ASSIGN, f.getCurrBlock());
+        Operand retSrc = new Operand(Operand.OperandType.MACRO, "RetReg");
+        this.setRegNum(f.getNewRegNum());
+        Operand dest = new Operand(Operand.OperandType.REGISTER, this.getRegNum());
+        retOper.setSrcOperand(0, retSrc);
+        retOper.setDestOperand(0, dest);
+        f.getCurrBlock().appendOper(retOper);
+        
     }
 }

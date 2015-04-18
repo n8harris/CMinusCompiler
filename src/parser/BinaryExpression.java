@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lowlevel.Function;
+import lowlevel.Operand;
+import lowlevel.Operation;
 import scanner.Token;
 
 /**
@@ -138,6 +141,64 @@ public class BinaryExpression extends Expression {
      */
     public void setOperator(Token operator) {
         this.operator = operator;
+    }
+    
+    public void genLLCode(Function f) throws Exception {
+        lhs.genLLCode(f);
+        rhs.genLLCode(f);
+        
+        Operand src1 = new Operand(Operand.OperandType.REGISTER, lhs.getRegNum());
+        Operand src2 = new Operand(Operand.OperandType.REGISTER, rhs.getRegNum());
+        this.setRegNum(f.getNewRegNum());
+        Operand dest = new Operand(Operand.OperandType.REGISTER, this.getRegNum());
+        
+        switch(operator.getType()){
+            case PLUS_TOKEN:
+                addOper(Operation.OperationType.ADD_I, f, src1, src2, dest);
+                break;
+            case MINUS_TOKEN:
+                addOper(Operation.OperationType.SUB_I, f, src1, src2, dest);
+                break;
+            case MULT_TOKEN:
+                addOper(Operation.OperationType.MUL_I, f, src1, src2, dest);
+                break;
+            case DIV_TOKEN:
+                addOper(Operation.OperationType.DIV_I, f, src1, src2, dest);
+                break;
+            case LT_TOKEN:
+                addOper(Operation.OperationType.LT, f, src1, src2, dest);
+                break;
+            case LTEQ_TOKEN:
+                addOper(Operation.OperationType.LTE, f, src1, src2, dest);
+                break;
+            case GT_TOKEN:
+                addOper(Operation.OperationType.GT, f, src1, src2, dest);
+                break;
+            case GTEQ_TOKEN:
+                addOper(Operation.OperationType.GTE, f, src1, src2, dest);
+                break;
+            case EQ_TOKEN:
+                addOper(Operation.OperationType.EQUAL, f, src1, src2, dest);
+                break;
+            case NOTEQ_TOKEN:
+                addOper(Operation.OperationType.NOT_EQUAL, f, src1, src2, dest);
+                break;
+            default:
+                break;
+                
+                
+        }
+        
+        
+    }
+    
+    public void addOper(Operation.OperationType op, Function f, Operand src1, Operand src2, Operand dest){
+        Operation newOper =
+        new Operation(op, f.getCurrBlock());
+        newOper.setSrcOperand(0, src1);
+        newOper.setSrcOperand(1, src2);
+        newOper.setDestOperand(0, dest);
+        f.getCurrBlock().appendOper(newOper);
     }
     
 }

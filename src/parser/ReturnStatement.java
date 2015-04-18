@@ -29,9 +29,9 @@ public class ReturnStatement extends Statement {
         }
     }
     
-    public void genLLCode(Function f){
+    public void genLLCode(Function f) throws Exception{
         if(expr != null){
-            expr.genLLCode();
+            expr.genLLCode(f);
             Operation newOper =
             new Operation(Operation.OperationType.ASSIGN, f.getCurrBlock());
             Operand src = new Operand(Operand.OperandType.REGISTER, expr.getRegNum());

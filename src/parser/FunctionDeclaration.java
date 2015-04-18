@@ -105,6 +105,8 @@ public class FunctionDeclaration extends Declaration {
         this.type = type;
     }
     
+    
+    @Override
     public Function genLLCode(){
         Function f = new Function(type, id.getId());
                     if(params != null){
@@ -114,12 +116,12 @@ public class FunctionDeclaration extends Declaration {
                             if(funcParams.getName() == null){
                                 funcParams.setname(p.getId().getId());
                                 funcParams.setType(Data.TYPE_INT);
-                                f.getTable().put(f.getNewRegNum(), p.getId().getId());
+                                f.getTable().put(p.getId().getId(), f.getNewRegNum());
                                 nextParam = funcParams;
                             } else {
                                 FuncParam tempParam = new FuncParam(Data.TYPE_INT, p.getId().getId());
                                 nextParam.setNextParam(tempParam);
-                                f.getTable().put(f.getNewRegNum(), p.getId().getId());
+                                f.getTable().put(p.getId().getId(), f.getNewRegNum());
                                 nextParam = tempParam;
                             }
                         }
@@ -130,7 +132,8 @@ public class FunctionDeclaration extends Declaration {
                     BasicBlock newBlock = new BasicBlock(f);
                     f.appendBlock(newBlock);
                     f.setCurrBlock(newBlock);
-                    //funDecl.getCmpdStatement().genLLCode(f);
+                    cmpdStatement.genLLCode(f);
+                    f.appendBlock(f.getReturnBlock());
                     
                     return f;
         

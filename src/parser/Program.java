@@ -52,33 +52,21 @@ public class Program {
         CodeItem returnItem = null;
         CodeItem tail = null;
         for(Declaration d : declarationList){
-                if(d instanceof VarDeclaration){
-                    VarDeclaration globalDecl = (VarDeclaration)d;
-                    CodeItem next = globalDecl.genLLCode();
-                    if(returnItem == null){
-                        tail = next;
-                        returnItem = tail;
-                    } else {
-                        tail.setNextItem(next);
-                        tail = next;
-                    }
-                    
+                CodeItem next = d.genLLCode();                    
+                if(returnItem == null){
+                    tail = next;
+                    returnItem = tail;
                 } else {
-                    FunctionDeclaration funDecl = (FunctionDeclaration)d;
-                    CodeItem next = funDecl.genLLCode();
-                    
-                    
-                    if(returnItem == null){
-                        tail = next;
-                        returnItem = tail;
-                    } else {
-                        tail.setNextItem(next);
-                        tail = next;
-                    }
-                    
-                    
+                    tail.setNextItem(next);
+                    tail = next;
                 }
-            }
+
+                if(d instanceof VarDeclaration){
+                    VarDeclaration varDecl = (VarDeclaration)d;
+                    CMinusCompiler.globalHash.put(varDecl.getId().getId(), null);
+                }
+                    
+        }
         
         return returnItem;
     }

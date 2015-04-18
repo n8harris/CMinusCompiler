@@ -1,10 +1,12 @@
 package parser;
 
+import cminuscompiler.CMinusCompiler;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lowlevel.Function;
 
 /**
  *
@@ -95,5 +97,18 @@ public class Identifier extends Expression {
      */
     public void setArgs(ArrayList<Expression> args) {
         this.args = args;
+    }
+    
+    @Override
+    public void genLLCode(Function f) throws Exception {
+        if(f.getTable().containsKey(id)){
+            this.setRegNum((int)f.getTable().get(id));
+            
+        } else if (CMinusCompiler.globalHash.containsKey(id)) {
+            this.setRegNum((int)CMinusCompiler.globalHash.get(id));
+            
+        } else {
+            throw new Exception("Could not find variable");
+        }
     }
 }

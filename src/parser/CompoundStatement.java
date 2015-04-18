@@ -3,6 +3,7 @@ package parser;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import lowlevel.Function;
 
 /**
  *
@@ -58,5 +59,16 @@ public class CompoundStatement extends Statement {
      */
     public void setStmtList(ArrayList<Statement> stmtList) {
         this.stmtList = stmtList;
+    }
+    
+    @Override
+    public void genLLCode(Function f){
+        for(VarDeclaration v : localDecl){
+            f.getTable().put(v.getId().getId(), f.getNewRegNum());
+        }
+        
+        for(Statement currStmt : stmtList){
+            currStmt.genLLCode(f);
+        }
     }
 }

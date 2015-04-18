@@ -2,6 +2,7 @@ package parser;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import lowlevel.Function;
 
 /**
  *
@@ -26,5 +27,7 @@ public abstract class Expression {
     public void setRegNum(int regNum) {
         this.regNum = regNum;
     }
+    
+    public abstract void genLLCode(Function f) throws Exception;
     
 }
