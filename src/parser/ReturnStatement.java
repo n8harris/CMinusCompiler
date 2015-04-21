@@ -43,7 +43,7 @@ public class ReturnStatement extends Statement {
         
         Operation jumpOper =
         new Operation(Operation.OperationType.JMP, f.getCurrBlock());
-        Operand jmpSrc = new Operand(Operand.OperandType.BLOCK, f.genReturnBlock());
+        Operand jmpSrc = new Operand(Operand.OperandType.BLOCK, f.genReturnBlock().getBlockNum());
         jumpOper.setSrcOperand(0, jmpSrc);
         f.getCurrBlock().appendOper(jumpOper);
         

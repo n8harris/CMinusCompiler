@@ -32,4 +32,6 @@ void quicksort(int x,int first,int last){
     } else {
 		i = 0;
 	}
+	
+	j = 1;
 }

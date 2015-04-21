@@ -49,10 +49,10 @@ public class IterationStatement extends Statement {
         Operation branchNeqOper = new Operation(Operation.OperationType.BNE, f.getCurrBlock());
         Operand srcNeq1 = new Operand(Operand.OperandType.REGISTER, expr.getRegNum());
         Operand srcNeq2 = new Operand(Operand.OperandType.INTEGER, 0);
-        Operand bbNeqSrc = new Operand(Operand.OperandType.BLOCK, whileBody.getBlockNum());
-        branchNeqOper.setSrcOperand(0, src1);
-        branchNeqOper.setSrcOperand(1, src2);
-        branchNeqOper.setSrcOperand(2, bbSrc);
+        Operand bbNeqSrc = new Operand(Operand.OperandType.BLOCK, f.getCurrBlock().getBlockNum());
+        branchNeqOper.setSrcOperand(0, srcNeq1);
+        branchNeqOper.setSrcOperand(1, srcNeq2);
+        branchNeqOper.setSrcOperand(2, bbNeqSrc);
         f.getCurrBlock().appendOper(branchNeqOper);
         f.appendToCurrentBlock(postBlock);
         f.setCurrBlock(postBlock);

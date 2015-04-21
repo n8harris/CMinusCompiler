@@ -63,7 +63,8 @@ int main (void) {
   int h;
   int i;
 
-  b = c = 5;
+  b = 5; 
+  c = 5;
 
   if (b == 5) {
     a = 3;

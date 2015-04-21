@@ -134,6 +134,9 @@ public class FunctionDeclaration extends Declaration {
                     f.setCurrBlock(newBlock);
                     cmpdStatement.genLLCode(f);
                     f.appendBlock(f.getReturnBlock());
+                    if(f.getFirstUnconnectedBlock() != null){
+                        f.appendBlock(f.getFirstUnconnectedBlock());
+                    }
                     
                     return f;
         

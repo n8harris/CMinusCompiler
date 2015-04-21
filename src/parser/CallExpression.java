@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import lowlevel.Attribute;
 import lowlevel.Function;
 import lowlevel.Operand;
 import lowlevel.Operation;
@@ -40,6 +41,7 @@ public class CallExpression extends Expression {
             exp.genLLCode(f);
             Operation newOper =
             new Operation(Operation.OperationType.PASS, f.getCurrBlock());
+            newOper.addAttribute(new Attribute("PARAM_NUM", Integer.toString(exp.getRegNum())));
             Operand src = new Operand(Operand.OperandType.REGISTER, exp.getRegNum());
             newOper.setSrcOperand(0, src);
             f.getCurrBlock().appendOper(newOper);
@@ -47,6 +49,7 @@ public class CallExpression extends Expression {
         
         Operation callOper =
         new Operation(Operation.OperationType.CALL, f.getCurrBlock());
+        callOper.addAttribute(new Attribute("numParams", Integer.toString(args.size())));
         Operand src = new Operand(Operand.OperandType.STRING, id.getId());
         callOper.setSrcOperand(0, src);
         f.getCurrBlock().appendOper(callOper);

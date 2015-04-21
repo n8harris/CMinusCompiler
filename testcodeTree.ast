@@ -252,11 +252,13 @@ Program
             AssignExpression
                 Identifier
                     b
-                AssignExpression
-                    Identifier
-                        c
-                    Numeric
-                        5
+                Numeric
+                    5
+            AssignExpression
+                Identifier
+                    c
+                Numeric
+                    5
             IfStatement
                 Expression
                     ==
