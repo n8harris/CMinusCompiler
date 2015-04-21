@@ -107,9 +107,9 @@ public class FunctionDeclaration extends Declaration {
     
     
     @Override
-    public Function genLLCode(){
+    public Function genLLCode() throws Exception{
         Function f = new Function(type, id.getId());
-                    if(params != null){
+                    if(params.get(0) != null){
                         FuncParam funcParams = new FuncParam();
                         FuncParam nextParam = new FuncParam();
                         for(Parameter p : params){

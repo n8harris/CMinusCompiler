@@ -29,6 +29,6 @@ public abstract class Declaration {
         this.regNum = regNum;
     }
     
-    public abstract CodeItem genLLCode();
+    public abstract CodeItem genLLCode() throws Exception;
 
 }

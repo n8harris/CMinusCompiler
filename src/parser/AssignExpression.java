@@ -32,23 +32,23 @@ public class AssignExpression extends Expression {
     @Override
     public void genLLCode(Function f) throws Exception{
         expr.genLLCode(f);
-        if(f.getTable().containsKey(id)){
+        if(f.getTable().containsKey(id.getId())){
             Operation newOper =
             new Operation(Operation.OperationType.ASSIGN, f.getCurrBlock());
             Operand src = new Operand(Operand.OperandType.REGISTER, expr.getRegNum());
-            Operand dest = new Operand(Operand.OperandType.REGISTER, (int)f.getTable().get(id));
+            Operand dest = new Operand(Operand.OperandType.REGISTER, Integer.parseInt(f.getTable().get(id.getId()).toString()));
             newOper.setSrcOperand(0, src);
             newOper.setDestOperand(0, dest);
             f.getCurrBlock().appendOper(newOper);
-        } else if(CMinusCompiler.globalHash.containsKey(id)){
-            if(CMinusCompiler.globalHash.get(id) == null){
-                CMinusCompiler.globalHash.put(id, f.getNewRegNum());
+        } else if(CMinusCompiler.globalHash.containsKey(id.getId())){
+            if(CMinusCompiler.globalHash.get(id.getId()) == null){
+                CMinusCompiler.globalHash.put(id.getId(), f.getNewRegNum());
             }
             
             Operation newOper =
             new Operation(Operation.OperationType.ASSIGN, f.getCurrBlock());
             Operand src = new Operand(Operand.OperandType.REGISTER, expr.getRegNum());
-            Operand dest = new Operand(Operand.OperandType.REGISTER, (int)CMinusCompiler.globalHash.get(id));
+            Operand dest = new Operand(Operand.OperandType.REGISTER, Integer.parseInt(CMinusCompiler.globalHash.get(id.getId()).toString()));
             newOper.setSrcOperand(0, src);
             newOper.setDestOperand(0, dest);
             f.getCurrBlock().appendOper(newOper);

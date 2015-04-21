@@ -60,14 +60,8 @@ Program
                                     <=
                                         Identifier
                                             x
-                                            ArrayExpression
-                                                Identifier
-                                                    i
                                         Identifier
-                                            x
-                                            ArrayExpression
-                                                Identifier
-                                                    pivot
+                                            i
                                 CompoundStatement
                                     AssignExpression
                                         Identifier
@@ -83,21 +77,12 @@ Program
                                     >
                                         Identifier
                                             x
-                                            ArrayExpression
-                                                Identifier
-                                                    j
                                         Expression
                                             +
                                                 Identifier
-                                                    x
-                                                    ArrayExpression
-                                                        Identifier
-                                                            pivot
+                                                    j
                                                 Identifier
-                                                    x
-                                                    ArrayExpression
-                                                        Identifier
-                                                            j
+                                                    j
                                 CompoundStatement
                                     AssignExpression
                                         Identifier
@@ -121,26 +106,14 @@ Program
                                             temp
                                         Identifier
                                             x
-                                            ArrayExpression
-                                                Identifier
-                                                    i
+                                    AssignExpression
+                                        Identifier
+                                            i
+                                        Identifier
+                                            j
                                     AssignExpression
                                         Identifier
                                             x
-                                            ArrayExpression
-                                                Identifier
-                                                    i
-                                        Identifier
-                                            x
-                                            ArrayExpression
-                                                Identifier
-                                                    j
-                                    AssignExpression
-                                        Identifier
-                                            x
-                                            ArrayExpression
-                                                Identifier
-                                                    j
                                         Identifier
                                             temp
                     AssignExpression
@@ -148,26 +121,14 @@ Program
                             temp
                         Identifier
                             x
-                            ArrayExpression
-                                Identifier
-                                    pivot
                     AssignExpression
                         Identifier
                             x
-                            ArrayExpression
-                                Identifier
-                                    pivot
                         Identifier
-                            x
-                            ArrayExpression
-                                Identifier
-                                    j
+                            j
                     AssignExpression
                         Identifier
-                            x
-                            ArrayExpression
-                                Identifier
-                                    j
+                            j
                         Identifier
                             temp
                     CallExpression
@@ -196,3 +157,10 @@ Program
                                     1
                         Identifier
                             last
+                ElseStatement
+                    CompoundStatement
+                        AssignExpression
+                            Identifier
+                                i
+                            Numeric
+                                0

@@ -62,7 +62,7 @@ public class CompoundStatement extends Statement {
     }
     
     @Override
-    public void genLLCode(Function f){
+    public void genLLCode(Function f) throws Exception{
         for(VarDeclaration v : localDecl){
             f.getTable().put(v.getId().getId(), f.getNewRegNum());
         }

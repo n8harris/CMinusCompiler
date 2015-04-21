@@ -51,7 +51,7 @@ public class IfStatement extends Statement {
         
         if(elseStmt == null){
             
-            Operand bbSrc = new Operand(Operand.OperandType.BLOCK, postBlock);
+            Operand bbSrc = new Operand(Operand.OperandType.BLOCK, postBlock.getBlockNum());
             branchOper.setSrcOperand(0, src1);
             branchOper.setSrcOperand(1, src2);
             branchOper.setSrcOperand(2, bbSrc);
@@ -65,7 +65,7 @@ public class IfStatement extends Statement {
         } else {
 
             BasicBlock elseBlock = new BasicBlock(f);
-            Operand bbSrc = new Operand(Operand.OperandType.BLOCK, elseBlock);
+            Operand bbSrc = new Operand(Operand.OperandType.BLOCK, elseBlock.getBlockNum());
             branchOper.setSrcOperand(0, src1);
             branchOper.setSrcOperand(1, src2);
             branchOper.setSrcOperand(2, bbSrc);
@@ -77,7 +77,7 @@ public class IfStatement extends Statement {
             f.setCurrBlock(elseBlock);
             elseStmt.genLLCode(f);
             Operation jmpOperation = new Operation(Operation.OperationType.JMP, f.getCurrBlock());
-            Operand jumpLoc = new Operand(Operand.OperandType.BLOCK, postBlock);
+            Operand jumpLoc = new Operand(Operand.OperandType.BLOCK, postBlock.getBlockNum());
             jmpOperation.setSrcOperand(0, jumpLoc);
             f.getCurrBlock().appendOper(jmpOperation);
             f.appendUnconnectedBlock(elseBlock);

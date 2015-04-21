@@ -187,7 +187,7 @@ public class CMinusParser implements Parser {
     @Override
     public Numeric parseNumeric() throws ParseException{
         if(scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
-            return new Numeric((int)scanner.getNextToken().getData());
+            return new Numeric(Integer.parseInt(scanner.getNextToken().getData().toString()));
         } else {
             if(scanner.viewNextToken().getType() == Token.TokenType.ID_TOKEN || 
                scanner.viewNextToken().getType() == Token.TokenType.NUM_TOKEN){
