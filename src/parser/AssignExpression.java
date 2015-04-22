@@ -41,16 +41,13 @@ public class AssignExpression extends Expression {
             newOper.setDestOperand(0, dest);
             f.getCurrBlock().appendOper(newOper);
         } else if(CMinusCompiler.globalHash.containsKey(id.getId())){
-            if(CMinusCompiler.globalHash.get(id.getId()) == null){
-                CMinusCompiler.globalHash.put(id.getId(), f.getNewRegNum());
-            }
             
             Operation newOper =
-            new Operation(Operation.OperationType.ASSIGN, f.getCurrBlock());
-            Operand src = new Operand(Operand.OperandType.REGISTER, expr.getRegNum());
-            Operand dest = new Operand(Operand.OperandType.REGISTER, Integer.parseInt(CMinusCompiler.globalHash.get(id.getId()).toString()));
-            newOper.setSrcOperand(0, src);
-            newOper.setDestOperand(0, dest);
+            new Operation(Operation.OperationType.STORE_I, f.getCurrBlock());
+            Operand src1 = new Operand(Operand.OperandType.REGISTER, expr.getRegNum());
+            Operand src2 = new Operand(Operand.OperandType.STRING, id.getId());
+            newOper.setSrcOperand(0, src1);
+            newOper.setSrcOperand(1, src2);
             f.getCurrBlock().appendOper(newOper);
         } else {
             throw new Exception("Could not find variable");

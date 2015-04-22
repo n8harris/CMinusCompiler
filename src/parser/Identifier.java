@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lowlevel.Function;
+import lowlevel.Operand;
+import lowlevel.Operation;
 
 /**
  *
@@ -105,7 +107,14 @@ public class Identifier extends Expression {
             this.setRegNum((int)f.getTable().get(id));
             
         } else if (CMinusCompiler.globalHash.containsKey(id)) {
-            this.setRegNum((int)CMinusCompiler.globalHash.get(id));
+            this.setRegNum(f.getNewRegNum());
+            Operation newOper =
+            new Operation(Operation.OperationType.LOAD_I, f.getCurrBlock());
+            Operand src = new Operand(Operand.OperandType.STRING, id);
+            Operand dest = new Operand(Operand.OperandType.REGISTER, this.getRegNum());
+            newOper.setSrcOperand(0, src);
+            newOper.setDestOperand(0, dest);
+            f.getCurrBlock().appendOper(newOper);
             
         } else {
             throw new Exception("Could not find variable");
