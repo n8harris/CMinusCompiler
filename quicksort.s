@@ -2,77 +2,78 @@
 	.align 4
 .globl  quicksort
 quicksort:
-quicksort_bb1:
-	pushq	%RBP
-	pushq	%R12
+quicksort_bb2:
 	pushq	%R13
 	pushq	%R14
 	pushq	%R15
-	movl	%EDI, %R14D
-	movl	%ESI, %EAX
-	movl	%EDX, %R15D
-quicksort_bb2:
-	cmpl	%R15D, %EAX
-	jge	quicksort_bb5
+	movl	%EDI, %R13D
+	movl	%ESI, %ECX
+	movl	%EDX, %R14D
 quicksort_bb3:
-	movl	%EAX, %ESI
-	movl	%R15D, %EBP
-	cmpl	%EBP, %ESI
-	jge	quicksort_bb7
-quicksort_bb6:
-	cmpl	%ESI, %R14D
-	jg	quicksort_bb9
-quicksort_bb8:
-	movl	%ESI, %EDI
-	addl	%R10D, %EDI
-	movl	%EDI, %ESI
-	cmpl	%ESI, %R14D
-	jle	quicksort_bb8
-quicksort_bb9:
-	movl	%EBP, %EDI
-	addl	%EBP, %EDI
-	cmpl	%EDI, %R14D
-	jle	quicksort_bb11
-quicksort_bb10:
-	movl	%EBP, %EDI
-	addl	%R9D, %EDI
-	movl	%EDI, %EBP
-	movl	%EBP, %EDI
-	addl	%EBP, %EDI
-	cmpl	%EDI, %R14D
-	jg	quicksort_bb10
-quicksort_bb11:
-	cmpl	%EBP, %ESI
-	jge	quicksort_bb13
-quicksort_bb12:
-	movl	%R14D, %EDI
-	movl	%EBP, %ESI
-	movl	%EDI, %R14D
-quicksort_bb13:
-	cmpl	%EBP, %ESI
-	jl	quicksort_bb13
-quicksort_bb7:
-	movl	%R14D, %EDI
-	movl	%EBP, %R14D
-	movl	%EDI, %EBP
-	movl	%EBP, %EDI
-	subl	%R8D, %EDI
-	pushq	%RDI
-	movl	%EAX, %EDX
-	movl	%R14D, %ESI
-	call	quicksort
-	movl	%R15D, %ECX
-	movl	%EBP, %EAX
-	addl	%R12D, %EAX
-	pushq	%RAX
-	movl	%R14D, %ESI
-	call	quicksort
+	cmpl	%R14D, %ECX
+	jge	quicksort_bb6
 quicksort_bb4:
+	movl	%ECX, %ESI
+	movl	%R14D, %R15D
+	cmpl	%R15D, %ESI
+	jge	quicksort_bb8
+quicksort_bb7:
+	cmpl	%ESI, %R13D
+	jg	quicksort_bb10
+quicksort_bb9:
+	movl	$1, %EDI
+	movl	%ESI, %EAX
+	addl	%EDI, %EAX
+	movl	%EAX, %ESI
+	cmpl	%ESI, %R13D
+	jle	quicksort_bb9
+quicksort_bb10:
+	movl	%R15D, %EAX
+	addl	%R15D, %EAX
+	cmpl	%EAX, %R13D
+	jle	quicksort_bb12
+quicksort_bb11:
+	movl	$1, %EDI
+	movl	%R15D, %EAX
+	addl	%EDI, %EAX
+	movl	%EAX, %R15D
+	movl	%R15D, %EAX
+	addl	%R15D, %EAX
+	cmpl	%EAX, %R13D
+	jg	quicksort_bb11
+quicksort_bb12:
+	cmpl	%R15D, %ESI
+	jge	quicksort_bb14
+quicksort_bb13:
+	movl	%R13D, %EAX
+	movl	%R15D, %ESI
+	movl	%EAX, %R13D
+quicksort_bb14:
+	cmpl	%R15D, %ESI
+	jl	quicksort_bb14
+quicksort_bb8:
+	movl	%R13D, %EAX
+	movl	%R15D, %R13D
+	movl	%EAX, %R15D
+	movl	%R13D, %EDI
+	movl	%ECX, %ESI
+	movl	$1, %EDI
+	movl	%R15D, %EAX
+	subl	%EDI, %EAX
+	movl	%EAX, %EDX
+	call	quicksort
+	movl	%R13D, %EDI
+	movl	$1, %EDI
+	movl	%R15D, %EAX
+	addl	%EDI, %EAX
+	movl	%EAX, %ESI
+	movl	%R14D, %EDX
+	call	quicksort
+quicksort_bb1:
 	popq	%R13
 	popq	%R14
 	popq	%R15
-	popq	%R12
-	popq	%RBP
 	ret
-quicksort_bb5:
-	jmp	quicksort_bb4
+quicksort_bb6:
+	movl	$0, %EAX
+	jmp	quicksort_bb1

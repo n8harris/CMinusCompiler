@@ -36,15 +36,16 @@ public class CallExpression extends Expression {
     
     @Override
     public void genLLCode(Function f) throws Exception{
-        Collections.reverse(args);
+        int parmNum = 0;
         for(Expression exp : args){
             exp.genLLCode(f);
             Operation newOper =
             new Operation(Operation.OperationType.PASS, f.getCurrBlock());
-            newOper.addAttribute(new Attribute("PARAM_NUM", Integer.toString(exp.getRegNum())));
+            newOper.addAttribute(new Attribute("PARAM_NUM", Integer.toString(parmNum)));
             Operand src = new Operand(Operand.OperandType.REGISTER, exp.getRegNum());
             newOper.setSrcOperand(0, src);
             f.getCurrBlock().appendOper(newOper);
+            parmNum++;
         }
         
         Operation callOper =

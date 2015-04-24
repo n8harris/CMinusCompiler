@@ -164,8 +164,3 @@ Program
                                 i
                             Numeric
                                 0
-            AssignExpression
-                Identifier
-                    j
-                Numeric
-                    1
